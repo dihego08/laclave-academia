@@ -46,6 +46,7 @@ class html_alumnos extends f
                         <a style="float: right; margin-bottom: 10px;" class="btn btn-sm btn-info" href="system/lib/exportar_excel_alumnos.php">
                             <span >Exportar EXCEL</span>
                         </a>
+                        <a href="system/lib/generar-carnet.php?id=0" id="btn-exportar-carnet" style="float: right; margin-bottom: 10px;" class="btn btn-maroon btn-sm"><i class="fa fa-id-badge"></i> Imprimir Carnet</a>
                         <h5 class="">
                             <i class="fa fa-bars" aria-hidden="true"></i> Lista de Alumnos
                         </h5>
@@ -60,8 +61,10 @@ class html_alumnos extends f
                                     <table  class="datatable table dt-responsive nowrap" style="width:100%">
                                         <thead>
                                             <tr>
+                                                <th></th>
                                                 <th>Id</th>
                                                 <th>Habilitar</th>
+                                                <th>Foto</th>
                                                 <th>N° Doc.</th>
                                                 <th>Nombres</th>
                                                 <th>Apellidos</th>
@@ -196,6 +199,17 @@ class html_alumnos extends f
                                         <input type="text" class="form-control" id="pension" name="pension" placeholder="Ex: 500.00">
                                     </div>
                                 </div>
+                                <div class="col-md-12 form-row">
+                                    <div class="col-md-6 text-center">    
+                                        <label class="w-100">Foto</label>
+                                        <label for="foto" style="font-weight: bold;">Seleccionar imagen
+                                            <input id="foto" class="form-control" name="foto" type="file" style="display: none;"/>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-6 text-center">
+                                        <img class="mt-2" src="" id="profile-img-tag" width="200px" style="margin-left: auto;margin-right: auto;" />
+                                    </div>
+                                </div>
 
                                 <div class="col-md-12 mt-3">
                                     <progress id="progressBar" class="mt-2" value="0" max="100" style="width:100%;"></progress>
@@ -217,63 +231,15 @@ class html_alumnos extends f
             </div>
             <!----------------------------------------------------------------------->
 
-            <!----------------------------------------------------------------------->
-            <div class="modal fade" id="img_carnet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document" style="max-width: 80%;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title" id="exampleModalLabel">Nuevo Alumno</h3>
-                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group" style="width: 100%;">
-                                <div class="form-row" style="background: linear-gradient(to right, white, #ad013b);">
-                                    <div class="col-4">
-                                        <img src="/img/logo.png">
-                                    </div>
-                                    <div class="col-8">
-                                        <h4 style="font-weight: bold; color: white;" class="text-center">CARNÉ DE IDENTIFICACIÓN</h4>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="col-4">
-                                        <img src="/img/blank-profile-picture-973460_1280.png">
-                                    </div>
-                                    <div class="col-8 forn-row" id="myelement">
-                                        <div class="col-6" style="color: #70012d; ">Nombres: </div>
-                                        <div class="col-6" style="color: #70012d; "></div>
-                                        <div class="col-6" style="color: #70012d; ">Apellidos: </div>
-                                        <div class="col-6" style="color: #70012d; "></div>
-                                        <div class="col-6" style="color: #70012d; ">Horario: </div>
-                                        <div class="col-6" style="color: #70012d; "></div>
-                                        <div class="col-4" style="color: #70012d; ">Código: </div>
-                                        <div class="col-4" style="color: #70012d; "></div>
-                                        <div class="col-4" style="color: #70012d; ">
-                                            GRUPO:
-                                            <br>
-                                            2022
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!----------------------------------------------------------------------->
             <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
             <script>
                 function _(el){
                     return document.getElementById(el);
                 }
                 function uploadFile(){
-                    var file = _("file1").files[0];
+                    var file = _("foto").files[0];
                     var formdata = new FormData();
-                    formdata.append("file1", file);
+                    formdata.append("foto", file);
                     formdata.append("id_curso", $("#id_curso").val());
                     formdata.append("id_tema", $("#id_tema").val());
                     formdata.append("tarea", $("#tarea").val());
@@ -378,7 +344,7 @@ class html_alumnos extends f
                     });
                 }
                 $(document).ready(function() {
-                    
+                    var ids_alumnos = 0;
                     llenar_universidades();
 
                     $("#ins_universidad").on("change", function(){
@@ -405,7 +371,7 @@ class html_alumnos extends f
                             reader.readAsDataURL(input.files[0]);
                         }
                     }
-                    $("#img_tipo_estudiante").change(function(){
+                    $("#foto").change(function(){
                         readURL(this);
                     });
                     $(".js-example-basic-single").select2();
@@ -460,16 +426,31 @@ class html_alumnos extends f
                             "dataSrc": ""
                         },
                         "columns": [{
+                            "data": "id",
+                            "className": "dt-selecciona",
+                            "render": function (data, type, full, meta){
+                                return `<input type="checkbox" class="cb-dt-selecciona" name="id-alumno" value="${data}">`;
+                            },
+                        }, {
                             "data": "id"
                         }, {
                             "data": "estado",
-                            "render": function(data){
+                            "render": function(data, a, b){
                                 if(data == 1){
-                                    return `<!--<span class="btn btn-info" data-toggle="modal" data-target="#img_carnet" id="btn_carnet"><i class="fa fa-photo"></i></span>-->`+ "<button id=\"btn_editar\" data-toggle=\"modal\" data-target=\"#formulario\" style=\"display: block;\" class=\"w-100 btn btn-warning btn-sm\" ><i class=\"fa fa-pencil\"></i></button><button id=\"btn_eliminar\"  style=\"display: block;\" class=\"w-100 mt-1 btn btn-danger btn-sm mb-1\"><i class=\"fa fa-trash\"></i></button>"+"<span id=\"btn_rem\" class=\"badge badge-danger\" style=\"cursor: pointer;\" title=\"Deshabilitar Acceso\">DESHABILITAR</span>"
+                                    return "<button id=\"btn_editar\" data-toggle=\"modal\" data-target=\"#formulario\" style=\"display: block;\" class=\"w-100 btn btn-warning btn-sm\" ><i class=\"fa fa-pencil\"></i></button><button id=\"btn_eliminar\"  style=\"display: block;\" class=\"w-100 mt-1 btn btn-danger btn-sm mb-1\"><i class=\"fa fa-trash\"></i></button>"+"<span id=\"btn_rem\" class=\"badge badge-danger\" style=\"cursor: pointer;\" title=\"Deshabilitar Acceso\">DESHABILITAR</span>"
                                 }else{
-                                    return `<!--<span class="btn btn-info" data-toggle="modal" data-target="#img_carnet" id="btn_carnet"><i class="fa fa-photo"></i></span>-->`+ "<button id=\"btn_editar\" data-toggle=\"modal\" data-target=\"#formulario\" style=\"display: block;\" class=\"w-100 btn btn-warning btn-sm\" ><i class=\"fa fa-pencil\"></i></button><button id=\"btn_eliminar\"  style=\"display: block;\" class=\"w-100 mt-1 btn btn-danger btn-sm mb-1\"><i class=\"fa fa-trash\"></i></button>"+"<span id=\"btn_add\" class=\"badge badge-success\" style=\"cursor: pointer;\" title=\"Habilitar Acceso\">HABILITAR</span>"
+                                    return "<button id=\"btn_editar\" data-toggle=\"modal\" data-target=\"#formulario\" style=\"display: block;\" class=\"w-100 btn btn-warning btn-sm\" ><i class=\"fa fa-pencil\"></i></button><button id=\"btn_eliminar\"  style=\"display: block;\" class=\"w-100 mt-1 btn btn-danger btn-sm mb-1\"><i class=\"fa fa-trash\"></i></button>"+"<span id=\"btn_add\" class=\"badge badge-success\" style=\"cursor: pointer;\" title=\"Habilitar Acceso\">HABILITAR</span>"
                                 }
                             },
+                        },  {
+                            "data": "foto",
+                            "render": function(data){
+                                if(data == null || data == "null" || data == ""){
+                                    return `Sin Foto`;
+                                }else{
+                                    return `<a href="system/controllers/photo/${data}" target="_blank"><img src="system/controllers/photo/${data}"></a>`;
+                                }
+                            }
                         },  {
                             "data": "dni"
                         }, {
@@ -530,6 +511,20 @@ class html_alumnos extends f
                         } else {
                             editar(data["id"]);
                         }
+                    });
+                    $(".datatable tbody").on("click", ".cb-dt-selecciona", function(){
+                        if($(this).is(":checked")){
+                            $(this).parents("tr").css("background", "#bbbbbb");
+                        }else{
+                            $(this).parents("tr").css("background", "none");
+                        }
+                        ids_alumnos = 0;
+                        $(\'input[name="id-alumno"]\').each(function(){
+                            if($(this).is(":checked")){
+                                ids_alumnos += ","+$(this).val();
+                            }
+                        });
+                        $("#btn-exportar-carnet").prop("href", "system/lib/generar-carnet.php?id="+ids_alumnos);
                     });
                     $(".datatable tbody").on("click", "#btn_rem", function() {
                         var data = table.row($(this).parents("tr")).data();
@@ -616,6 +611,7 @@ class html_alumnos extends f
                     $("#ins_correo_corporativo").val("");
                     $("#id_padre").val("");
                     $("#pension").val("");
+                    $("#profile-img-tag").attr("src", "");
                     $("#btn_finalizar").text("Guardar");
                 }
                 function editar(id){
@@ -643,6 +639,8 @@ class html_alumnos extends f
 
                             $("#fecha_pago").val(data.fecha_pago);
 
+                            $("#profile-img-tag").attr("src", "system/controllers/photo/"+data.foto);
+
                             llenar_ciclos(data.id_universidad, data.id_ciclo);
                             llenar_carreras(data.id_universidad, data.id_carrera);
                             llenar_grupos(data.id_ciclo, data.id_grupo);
@@ -667,6 +665,9 @@ class html_alumnos extends f
                     }else if($("#ins_grupo").val() == -1 || $("#ins_grupo").val() == "-1"){
                         bootbox.alert("Se debe de seleccionar un grupo");
                     }else{
+                        var file = _("foto").files[0];
+
+                        formdata.append("foto", file);
                         formdata.append("nombres", $("#ins_nombres").val());
                         formdata.append("apellidos", $("#ins_apellidos").val());
                         formdata.append("telefono", $("#ins_celular").val());
@@ -703,6 +704,9 @@ class html_alumnos extends f
                     }else if($("#ins_ciclo").val() == -1 || $("#ins_ciclo").val() == "-1"){
                         bootbox.alert("Se debe de seleccionar un ciclo academico");
                     }else {
+                        var file = _("foto").files[0];
+
+                        formdata.append("foto", file);
                         formdata.append("nombres", $("#ins_nombres").val());
                         formdata.append("apellidos", $("#ins_apellidos").val());
                         formdata.append("telefono", $("#ins_celular").val());
@@ -719,7 +723,6 @@ class html_alumnos extends f
 
                         formdata.append("fecha_pago", $("#fecha_pago").val());
                         formdata.append("pension", $("#pension").val());
-
 
                         formdata.append("id", id);
                         

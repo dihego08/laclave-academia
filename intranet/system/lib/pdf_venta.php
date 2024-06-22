@@ -52,7 +52,7 @@ $pdf->Ln(2);
 $pdf->Cell(25, 10, 'TOTAL', 0);
 $pdf->Cell(20, 10, '', 0);
 $pdf->Cell(15, 10, 'S/ ' . number_format($total, 2, '.', ' '), 0, 1, 'R');
-$total_letras = json_decode(file_get_contents('https://softluttion.com/numero_2_letras/conversor.php?total=' . $total));
+$total_letras = json_decode(file_get_contents('https://diegoaranibar.com/numero_2_letras/conversor.php?total=' . $total));
 $pdf->Ln(1);
 $pdf->Cell(60, 0, '', 'T', 1);
 $pdf->SetFont('Times', 'B', 8);

@@ -56,7 +56,27 @@ class clasificacion_alumnos extends f
 		}
 
 		$sql = "SELECT u.id, CONCAT(u.nombres, ' ', u.apellidos) as alumno, round(AVG(n.examen), 2) promedio from usuarios as u, tbl_notas as n, tbl_examenes as e WHERE u.id = n.id_alumno and n.id_examen = e.id and DATE_FORMAT(n.fecha, '%Y-%m-%d') BETWEEN '" . end($sabados_array) . "' AND '" . $sabados_array[0] . "' GROUP BY id, nombres order by promedio desc ";
+		//echo $sql;
 		$promedios = json_decode($this->modelo3->run_query($sql));
+
+		if (sizeof($promedios) == 0) {
+			$fecha = date("Y-m-d", strtotime(date("Y-m-d") . "+ 1 days"));
+			$estado = true;
+			$domingos = 0;
+			$domingos_array = array();
+			while ($estado) {
+				if ($domingos >= 1) {
+					$estado = false;
+				}
+				if (date("w", strtotime($fecha)) == 0) {
+					$domingos++;
+					$domingos_array[] = $fecha;
+				}
+				$fecha = date("Y-m-d", strtotime($fecha . "- 1 days"));
+			}
+			$sql = "SELECT u.id, CONCAT(u.nombres, ' ', u.apellidos) as alumno, round(AVG(n.examen), 2) promedio from usuarios as u, tbl_notas as n, tbl_examenes as e WHERE u.id = n.id_alumno and n.id_examen = e.id and DATE_FORMAT(n.fecha, '%Y-%m-%d') BETWEEN '" . end($domingos_array) . "' AND '" . $domingos_array[0] . "' GROUP BY id, nombres order by promedio desc ";
+			$promedios = json_decode($this->modelo3->run_query($sql));
+		}
 
 		$aulas = "SELECT * FROM aulas where aforo > 0 order by aula	ASC";
 		$result = $this->modelo2->select('', '', '', $aulas);

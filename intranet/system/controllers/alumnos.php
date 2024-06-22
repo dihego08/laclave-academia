@@ -91,13 +91,12 @@ class alumnos extends f
 			unset($value->pass);
 			$correos = "";
 
-			$value->carrera = "<p><span class=\"w-100\" style=\"display: block;\">".$value->carrera."</span><small>".$value->area." - ".$value->universidad."</small></p>";
-			$value->ciclo = "<p class=\"text-center\"><span class=\"w-100\" style=\"display: block;\">".$value->ciclo." -</span><small>".$value->grupo."</small></p>";
+			$value->carrera = "<p><span class=\"w-100\" style=\"display: block;\">" . $value->carrera . "</span><small>" . $value->area . " - " . $value->universidad . "</small></p>";
+			$value->ciclo = "<p class=\"text-center\"><span class=\"w-100\" style=\"display: block;\">" . $value->ciclo . " -</span><small>" . $value->grupo . "</small></p>";
 
 			$result[] = $value;
 		}
 		echo json_encode($result);
-
 	}
 	public function get_alumnos()
 	{
@@ -129,7 +128,7 @@ class alumnos extends f
 			if ($value->id_carrera == "" || is_null($value->id_carrera) || $value->id_carrera == 0) {
 				$universidad = json_decode($this->modelo2->select_one("universidades", array("id" => $value->id_universidad)));
 				$la_universidad = $universidad->universidad;
-			}else{
+			} else {
 				$carrera = json_decode($this->modelo2->select_one("carreras", array("id" => $value->id_carrera)));
 				$universidad = json_decode($this->modelo2->select_one("universidades", array("id" => $carrera->id_universidad)));
 				$area = json_decode($this->modelo2->select_one("areas", array('id' => $carrera->id_area)));
@@ -140,22 +139,21 @@ class alumnos extends f
 			}
 			$el_ciclo = "";
 			if ($value->id_ciclo == "" || is_null($value->id_ciclo) || $value->id_ciclo == 0) {
-				
-			}else{
+			} else {
 				$ciclo = json_decode($this->modelo2->select_one("ciclos", array("id" => $value->id_ciclo)));
 				$el_ciclo = $ciclo->ciclo;
 			}
-			
-			
+
+
 			$el_grupo = "";
 			$grupo = json_decode($this->modelo2->select_one("grupos", array("id" => $value->id_grupo)));
 			if (count($grupo) > 0) {
 				$el_grupo = $grupo->grupo;
-			}else{
+			} else {
 			}
 
-			$value->carrera = "<p><span class=\"w-100\" style=\"display: block;\">".$la_carrera."</span><small>".$el_area." - ".$la_universidad."</small></p>";
-			$value->ciclo = "<p class=\"text-center\"><span class=\"w-100\" style=\"display: block;\">".$el_ciclo." -</span><small>".$el_grupo."</small></p>";
+			$value->carrera = "<p><span class=\"w-100\" style=\"display: block;\">" . $la_carrera . "</span><small>" . $el_area . " - " . $la_universidad . "</small></p>";
+			$value->ciclo = "<p class=\"text-center\"><span class=\"w-100\" style=\"display: block;\">" . $el_ciclo . " -</span><small>" . $el_grupo . "</small></p>";
 
 			$result[] = $value;
 		}
@@ -163,17 +161,32 @@ class alumnos extends f
 	}
 	function save()
 	{
+		$_POST['foto'] = "";
+		$aux = 0;
+		$fileName = $_FILES["foto"]["name"];
+		$fileTmpLoc = $_FILES["foto"]["tmp_name"];
+		$fileType = $_FILES["foto"]["type"];
+		$fileSize = $_FILES["foto"]["size"];
+		$fileErrorMsg = $_FILES["foto"]["error"];
+		if (!$fileTmpLoc) {
+			//exit();
+		}
+
+		if (move_uploaded_file($fileTmpLoc, $_SERVER['DOCUMENT_ROOT'] . "/intranet/system/controllers/photo/$fileName")) {
+			$_POST['foto'] = $fileName;
+			$aux++;
+		} else {
+		}
+
 		$_POST['pass'] = md5($_POST['pass']);
 
 		$alumno = json_decode($this->modelo2->select_one("usuarios", array("dni" => $_POST["dni"])));
 
 		if (isset($alumno->nombres)) {
 			echo json_encode(array("Result" => "ERROR", "Code" => "125"));
-		}else{
+		} else {
 			echo $this->modelo2->insert_data("usuarios", $_POST, false);
 		}
-
-		
 	}
 	function eliminar()
 	{
@@ -197,11 +210,32 @@ class alumnos extends f
 		$rf = json_decode($this->modelo2->select_one("usuarios", array('id' => $_POST['id'])));
 
 		$_POST['estado'] = $rf->estado;
-
-		if (!isset($_POST['pass']) || $_POST['pass'] == "" || $_POST['pass'] == null) {
-			$_POST["pass"] = $rf->pass;
+		if ($_FILES['foto']['size'] == 0 && $_FILES['foto']['error'] == 0) {
+			$_POST["foto"] = $rf->foto;
+			if (!isset($_POST['pass']) || $_POST['pass'] == "" || $_POST['pass'] == null) {
+				$_POST["pass"] = $rf->pass;
+			} else {
+				$_POST["pass"] = md5($_POST['pass']);
+			}
 		} else {
-			$_POST["pass"] = md5($_POST['pass']);
+			if (!isset($_POST['pass']) || $_POST['pass'] == "" || $_POST['pass'] == null) {
+				$_POST["pass"] = $rf->pass;
+			} else {
+				$_POST["pass"] = md5($_POST['pass']);
+			}
+			$fileName = $_FILES["foto"]["name"];
+			$fileTmpLoc = $_FILES["foto"]["tmp_name"];
+			$fileType = $_FILES["foto"]["type"];
+			$fileSize = $_FILES["foto"]["size"];
+			$fileErrorMsg = $_FILES["foto"]["error"];
+			if (!$fileTmpLoc) {
+				//exit();
+			}
+			if (move_uploaded_file($fileTmpLoc, $_SERVER['DOCUMENT_ROOT'] . "/intranet/system/controllers/photo/$fileName")) {
+				$_POST["foto"] = $fileName;
+			} else {
+				$_POST["foto"] = "";
+			}
 		}
 		echo $this->modelo2->update_data("usuarios", $_POST);
 	}

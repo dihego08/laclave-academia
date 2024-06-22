@@ -164,7 +164,7 @@ class Header
                             <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'examenes/">Examenes</a>
                             <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'pagos_2/">Pagos</a>
 
-                            <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'horarios/">Horarios</a>
+                            <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'horario_ciclo/">Horarios</a>
 
                             <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'carreras/">Carreras</a>
                             <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'universidades/">Universidades</a>
