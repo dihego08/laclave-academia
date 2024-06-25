@@ -1,5 +1,4 @@
 <?php
-date_default_timezone_set('America/Lima');
 session_start();
 include("../../env/env.php");
 if ($_GET['parAccion'] == "get_data") {
@@ -1392,4 +1391,59 @@ if ($_GET['parAccion'] == "get_data") {
     }
 
     echo json_encode($result);
+} elseif ($_GET['parAccion'] == "getSchedule_category") {
+    $query = $mbd->prepare("SELECT id, name, color, bgColor, dragBgColor, borderColor, user_creation, date_creation FROM schedule_category");
+    $query->execute();
+    $values = array();
+    while ($res = $query->fetch(PDO::FETCH_ASSOC)) {
+        $values[] = $res;
+    }
+    echo json_encode(
+        array(
+            "Result" => "OK",
+            "Values" => $values
+        )
+    );
+} elseif ($_GET['parAccion'] == 'getSchedule_save') {
+    /*echo "SIN LLEGO";
+    echo $_POST['data']['title'];
+    var_dump($_POST);
+    print_r(json_decode($_POST['data']));*/
+    $encodedData = file_get_contents('php://input');  // take data from react native fetch API
+    $decodedData = json_decode($encodedData, true);
+    //print_r($decodedData);
+    //echo $decodedData['start']['_date'];
+    try {
+        $mbd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $mbd->beginTransaction();
+        $query = $mbd->prepare("INSERT INTO eventos(title, isAllDay, start, end, category, dueDateClass, color, bgColor, dragBgColor, borderColor, location, isPrivate, state) VALUES (:title, :isAllDay, :start, :end, :category, :dueDateClass, :color, :bgColor, :dragBgColor, :borderColor, :location, :isPrivate, :state)");
+        //$query->bindParam('',);
+        $query->bindParam(':title', $decodedData['title']);
+        $query->bindParam(':isAllDay', $decodedData['isAllDay']);
+        $query->bindParam(':start', $decodedData['start']['_date']);
+        $query->bindParam(':end', $decodedData['end']['_date']);
+        $query->bindParam(':category', $decodedData['category']);
+        $query->bindParam(':dueDateClass', $decodedData['dueDateClass']);
+        $query->bindParam(':color', $decodedData['color']);
+        $query->bindParam(':bgColor', $decodedData['bgColor']);
+        $query->bindParam(':dragBgColor', $decodedData['dragBgColor']);
+        $query->bindParam(':borderColor', $decodedData['borderColor']);
+        $query->bindParam(':location', $decodedData['location']);
+        $query->bindParam(':isPrivate', $decodedData['isPrivate']);
+        $query->bindParam(':state', $decodedData['state']);
+        $query->execute();
+
+        $mbd->commit();
+        $result = array(
+            'Result' => 'OK'
+        );
+        echo json_encode($result);
+    } catch (Exception $e) {
+        $mbd->rollBack();
+        $result = array(
+            'Result' => 'ERROR',
+            'Message' => $e->getMessage()
+        );
+        echo json_encode($result);
+    }
 }

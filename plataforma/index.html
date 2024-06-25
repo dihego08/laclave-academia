@@ -33,7 +33,7 @@
                     <span class="w-100 text-center" style="display: block;" id="career_name"></span>
                     <small class="w-100 text-center" style="display: block; text-transform: uppercase;"
                         id="area_name"></small>
-                        <small class="w-100 text-center" style="display: block; text-transform: uppercase;"
+                    <small class="w-100 text-center" style="display: block; text-transform: uppercase;"
                         id="aula_name"></small>
                 </div>
                 <ul class="nav">
@@ -98,7 +98,7 @@
                         </a>
                     </li>
                 </ul>
-                <div class="logo"><img class="w-100" src="../img/logo.png" alt=""
+                <div class="logo"><img class="w-100" src="https://laclave.diegoaranibar.com/img/logo.png" alt=""
                         style="border-radius: 4px; box-shadow: 0px 2px 2px #313131;" /></div>
                 <!--<div class="logo"><img class="w-100" src="assets/img/g2804.png" alt="" /></div>
                 <div class="logo"><img class="w-100" src="assets/img/g3775.png" alt="" /></div>
@@ -117,52 +117,54 @@
                 </div>
             </nav><!-- End Navbar -->
             <div class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-5" style="background-color: #f0e3d5;">
-                            <div class="card mt-1">
-                                <div class="card-header ">
-                                    <h4 class="card-title">Mis Cursos de Hoy</h4>
-                                    <p class="card-category">Los cursos de hoy se muestran acontinuacion.</p>
-                                </div>
-                                <div id="div_temas_hoy" class="card-body ">&nbsp;</div>
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <span class="btn btn-success btn-rounded" data-toggle="modal" data-target="#calendario">Calendario</span>
+                    </div>
+                    <div class="col-md-5" style="background-color: #f0e3d5;">
+                        <div class="card mt-1">
+                            <div class="card-header ">
+                                <h4 class="card-title">Mis Cursos de Hoy</h4>
+                                <p class="card-category">Los cursos de hoy se muestran acontinuacion.</p>
                             </div>
+                            <div id="div_temas_hoy" class="card-body ">&nbsp;</div>
                         </div>
-                        <div class="col-md-4" style="background-color: #f0e3d5;">
-                            <div class="card mt-1">
-                                <div class="card-header ">
-                                    <h4 class="card-title">Tareas Pendientes</h4>
-                                    <p class="card-category">Listado de Tareas pendientes de entrega.</p>
-                                </div>
-                                <div id="div_tareas_pendientes" class="card-body ">&nbsp;</div>
+                    </div>
+                    <div class="col-md-4" style="background-color: #f0e3d5;">
+                        <div class="card mt-1">
+                            <div class="card-header ">
+                                <h4 class="card-title">Tareas Pendientes</h4>
+                                <p class="card-category">Listado de Tareas pendientes de entrega.</p>
                             </div>
+                            <div id="div_tareas_pendientes" class="card-body ">&nbsp;</div>
                         </div>
-                        <div class="col-md-3" style="background-color: #f0e3d5;">
-                            <div class="card mt-1">
-                                <div class="card-header ">
-                                    <h4 class="card-title">Mis Alertas</h4>
-                                    <p class="card-category">Alertas para tener en cuenta.</p>
-                                </div>
-                                <div id="div_alertas" class="card-body " style="max-height: 350px; overflow-y: scroll;">
-                                    &nbsp;</div>
+                    </div>
+                    <div class="col-md-3" style="background-color: #f0e3d5;">
+                        <div class="card mt-1">
+                            <div class="card-header ">
+                                <h4 class="card-title">Mis Alertas</h4>
+                                <p class="card-category">Alertas para tener en cuenta.</p>
                             </div>
+                            <div id="div_alertas" class="card-body " style="max-height: 350px; overflow-y: scroll;">
+                                &nbsp;</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <footer class="footer">
-                <div class="container-fluid">
-                    <nav>
-                        <p class="copyright text-center">&copy;
-                            <script>
-                                document.write(new Date().getFullYear())
-                            </script>
-                            <a href="https://softluttion.com">Softluttion</a>, made with love for a better web
-                        </p>
-                    </nav>
-                </div>
-            </footer>
         </div>
+        <footer class="footer">
+            <div class="container-fluid">
+                <nav>
+                    <p class="copyright text-center">&copy;
+                        <script>
+                            document.write(new Date().getFullYear())
+                        </script>
+                        <a href="https://softluttion.com">Softluttion</a>, made with love for a better web
+                    </p>
+                </nav>
+            </div>
+        </footer>
+    </div>
     </div>
     <!----------------------------------------------------------------------->
     <div id="formulario" class="modal fade" tabindex="-1">
@@ -189,6 +191,22 @@
             </div>
         </div>
     </div>
+    <div id="calendario" class="modal fade" tabindex="-1" style="top: inherit;">
+        <div class="modal-dialog h-100" style="max-width: 80%;">
+            <div class="modal-content" style="background-color: #f1f1f1; min-height: 90%;">
+                <div class="modal-header" style="position: relative; padding-top: 0; padding-bottom: 0;">
+                    <h3 id="curso_nombre" class="modal-title mb-4"
+                        style="border-bottom: solid #f3e444; color: #313131;">Calendario</h3>
+                    <button class="close" style="color: #000;" type="button" data-dismiss="modal"> &times; </button>
+                </div>
+                <div class="modal-body pt-0">
+                    <div class="row w-100">
+                        <iframe src="schedules.html" frameborder="0" class="w-100" style="height: 100vh !important;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!----------------------------------------------------------------------->
     <p>&nbsp;</p>
 </body>
@@ -208,6 +226,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"
     integrity="sha512-8vfyGnaOX2EeMypNMptU+MwwK206Jk1I/tMQV4NkhOz+W8glENoMhGyU6n/6VgQUhQcJH8NqQgHhMtZjJJBv3A=="
     crossorigin="anonymous"></script>
+<script src="https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js"></script>
+<script src="https://uicdn.toast.com/tui.time-picker/v2.0.3/tui-time-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui.date-picker/v4.0.3/tui-date-picker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
+
 <script>
     function _(el) {
         return document.getElementById(el);
@@ -238,8 +262,6 @@
     }
 
     function completeHandler(event) {
-        /*table = $(".datatable").DataTable();
-        table.ajax.reload();*/
         var res = JSON.parse(event.target.response);
         if (res.Result == "OK") {
             bootbox.alert({
@@ -269,7 +291,7 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
-        get_data();
+        //get_data();
         get_ahora();
         localStorage.setItem('cur_url', window.location.href);
         lista_tareas_pendientes();
@@ -280,7 +302,6 @@
             var obj = JSON.parse(data);
 
             if (obj.user_name == null || obj.user_name == "" || obj.user_name == undefined) {
-                //location.href = "../";
                 location.href = "../login/login_a.php";
             } else {
                 $("#user_name").text(obj.user_name);
@@ -334,17 +355,7 @@
         });
     }
     function marcar_asistencia(id_curso) {
-        /*$.post("logic/servicios.php?parAccion=marcar_asistencia", {
-            id_curso: id_curso
-        }, function (response) {
-            var obj = JSON.parse(response);
-            if (obj.Result == "OK") {*/
         window.location.href = 'en_clase.html?tm=' + id_curso;
-        /*} else {
-            alert("Algo ha salido mal.");
-        }
-    });*/
-
     }
     function lista_tareas_pendientes() {
         $.post('logic/servicios.php?parAccion=lista_tareas_pendientes', function (response) {
