@@ -77,10 +77,11 @@ class html_asistencias_new extends f{
                             $("#div_data_alumno").empty();
                             $("#div_data_alumno").append(`
                                 <h5>${obj.Data.nombres} ${obj.Data.apellidos}</h5>
-                                <h5>Fecha de pago: ${obj.Data.fecha_pago} de cada mes.</h5>
-                                <h5>Estado de cuenta: ${obj.Ecuenta.ecuenta}</h5>
+                                <h5><strong>Fecha de pago:</strong> ${obj.Data.fecha_pago} de cada mes.</h5>
+                                <h5><strong>Estado de cuenta:</strong> ${obj.Ecuenta.ecuenta}</h5>
 
-                                <h5>Aula: ${obj.aula}</h5>
+                                <h5><strong>Aula:</strong> ${obj.aula}</h5>
+                                <h5><strong>Área:</strong> ${obj.area}</h5>
                             `);
                             $("#codigo_dni").val("");
                         }else{
@@ -101,10 +102,11 @@ class html_asistencias_new extends f{
                                     $("#div_data_alumno").empty();
                                     $("#div_data_alumno").append(`
                                         <h5>${obj.Data.nombres} ${obj.Data.apellidos}</h5>
-                                        <h5>Fecha de pago: ${obj.Data.fecha_pago} de cada mes.</h5>
-                                        <h5>Estado de cuenta: ${obj.Ecuenta.ecuenta}</h5>
+                                        <h5><strong>Fecha de pago:</strong> ${obj.Data.fecha_pago} de cada mes.</h5>
+                                        <h5><strong>Estado de cuenta:</strong> ${obj.Ecuenta.ecuenta}</h5>
 
-                                        <h5>Aula: ${obj.aula}</h5>
+                                        <h5><strong>Aula:</strong> ${obj.aula}</h5>
+                                        <h5><strong>Área:</strong> ${obj.area}</h5>
                                     `);
                                 }
                             }              

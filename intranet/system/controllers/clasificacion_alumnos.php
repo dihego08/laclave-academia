@@ -54,9 +54,10 @@ class clasificacion_alumnos extends f
 			}
 			$fecha = date("Y-m-d", strtotime($fecha . "- 1 days"));
 		}
-
-		$sql = "SELECT u.id, CONCAT(u.nombres, ' ', u.apellidos) as alumno, round(AVG(n.examen), 2) promedio from usuarios as u, tbl_notas as n, tbl_examenes as e WHERE u.id = n.id_alumno and n.id_examen = e.id and DATE_FORMAT(n.fecha, '%Y-%m-%d') BETWEEN '" . end($sabados_array) . "' AND '" . $sabados_array[0] . "' GROUP BY id, nombres order by promedio desc ";
+//$sabados_array[0]='2025-02-01';
+		$sql = "SELECT u.id, CONCAT(u.nombres, ' ', u.apellidos) as alumno, round(AVG(n.examen), 2) promedio, u.id_aula_designada from usuarios as u LEFT JOIN tbl_notas as n ON u.id = n.id_alumno AND DATE_FORMAT(n.fecha, '%Y-%m-%d') BETWEEN '" . end($sabados_array) . "' AND '" . $sabados_array[0] . "' LEFT JOIN tbl_examenes as e ON n.id_examen = e.id WHERE u.id_ciclo not in (27, 28, 29, 30) GROUP BY id, nombres ORDER BY promedio desc ";
 		//echo $sql;
+		//return;
 		$promedios = json_decode($this->modelo3->run_query($sql));
 
 		if (sizeof($promedios) == 0) {
@@ -74,11 +75,11 @@ class clasificacion_alumnos extends f
 				}
 				$fecha = date("Y-m-d", strtotime($fecha . "- 1 days"));
 			}
-			$sql = "SELECT u.id, CONCAT(u.nombres, ' ', u.apellidos) as alumno, round(AVG(n.examen), 2) promedio from usuarios as u, tbl_notas as n, tbl_examenes as e WHERE u.id = n.id_alumno and n.id_examen = e.id and DATE_FORMAT(n.fecha, '%Y-%m-%d') BETWEEN '" . end($domingos_array) . "' AND '" . $domingos_array[0] . "' GROUP BY id, nombres order by promedio desc ";
+			$sql = "SELECT u.id, CONCAT(u.nombres, ' ', u.apellidos) as alumno, round(AVG(n.examen), 2) promedio from usuarios as u, tbl_notas as n, tbl_examenes as e WHERE u.id = n.id_alumno and n.id_examen = e.id and DATE_FORMAT(n.fecha, '%Y-%m-%d') BETWEEN '" . end($domingos_array) . "' AND '" . $domingos_array[0] . "' WHERE u.id_ciclo not in (27, 28, 29, 30) GROUP BY id, nombres order by promedio desc ";
 			$promedios = json_decode($this->modelo3->run_query($sql));
 		}
 
-		$aulas = "SELECT * FROM aulas where aforo > 0 order by aula	ASC";
+		$aulas = "SELECT * FROM aulas where aforo > 0 order by orden ASC";
 		$result = $this->modelo2->select('', '', '', $aulas);
 
 		$inicio = 0;
@@ -96,7 +97,8 @@ class clasificacion_alumnos extends f
 			$values[] = array(
 				"alumno" => $key->alumno,
 				"aula" => $result[$i]['aula'],
-				"aforo" => $result[$i]['aforo']
+				"aforo" => $result[$i]['aforo'],
+				"promedio" => $key->promedio
 			);
 
 			$d = array(

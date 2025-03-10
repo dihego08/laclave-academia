@@ -1,123 +1,26 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang='en'>
 
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <title>TOAST UI Calendar App DEMO</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
-    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css">
-    <link rel="stylesheet" type="text/css" href="assets/js/plugins/tui.calendar/tui-calendar.css">
-    <link rel="stylesheet" type="text/css" href="assets/js/plugins/tui.calendar/default.css">
-    <link rel="stylesheet" type="text/css" href="assets/js/plugins/tui.calendar/icons.css">
+    <meta charset='utf-8' />
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                plugins: [interactionPlugin, dayGridPlugin],
+            });
+            calendar.render();
+        });
+
+    </script>
 </head>
 
 <body>
-    <!--<div id="top">
-        <a href="https://github.com/nhn/tui.calendar">
-            <img src="https://laclave.diegoaranibar.com/img/logo.png" class="w-100">
-        </a>
-    </div>-->
-    <div id="lnb">
-        <div class="lnb-new-schedule">
-            <button id="btn-new-schedule" type="button" class="btn btn-default btn-block lnb-new-schedule-btn"
-                data-toggle="modal">
-                Nuevo Evento</button>
-        </div>
-        <div id="lnb-calendars" class="lnb-calendars">
-            <div>
-                <div class="lnb-calendars-item">
-                    <label>
-                        <input class="tui-full-calendar-checkbox-square" type="checkbox" value="all" checked>
-                        <span></span>
-                        <strong>Ver Todos</strong>
-                    </label>
-                </div>
-            </div>
-            <div id="calendarList" class="lnb-calendars-d1">
-            </div>
-        </div>
-    </div>
-    <div id="right">
-        <div id="menu">
-            <span class="dropdown">
-                <button id="dropdownMenu-calendarType" class="btn btn-default btn-sm dropdown-toggle" type="button"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <i id="calendarTypeIcon" class="calendar-icon ic_view_month" style="margin-right: 4px;"></i>
-                    <span id="calendarTypeName">Dropdown</span>&nbsp;
-                    <i class="calendar-icon tui-full-calendar-dropdown-arrow"></i>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
-                    <li role="presentation">
-                        <a class="dropdown-menu-title" role="menuitem" data-action="toggle-daily">
-                            <i class="calendar-icon ic_view_day"></i>Diario
-                        </a>
-                    </li>
-                    <li role="presentation">
-                        <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weekly">
-                            <i class="calendar-icon ic_view_week"></i>Semanal
-                        </a>
-                    </li>
-                    <li role="presentation">
-                        <a class="dropdown-menu-title" role="menuitem" data-action="toggle-monthly">
-                            <i class="calendar-icon ic_view_month"></i>Mensual
-                        </a>
-                    </li>
-                    <li role="presentation">
-                        <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks2">
-                            <i class="calendar-icon ic_view_week"></i>2 Semanas
-                        </a>
-                    </li>
-                    <li role="presentation">
-                        <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks3">
-                            <i class="calendar-icon ic_view_week"></i>3 Semanas
-                        </a>
-                    </li>
-                    <li role="presentation" class="dropdown-divider"></li>
-                    <li role="presentation">
-                        <a role="menuitem" data-action="toggle-workweek">
-                            <input type="checkbox" class="tui-full-calendar-checkbox-square" value="toggle-workweek"
-                                checked>
-                            <span class="checkbox-title"></span>Mostrar Fines de Semana
-                        </a>
-                    </li>
-                    <li role="presentation">
-                        <a role="menuitem" data-action="toggle-start-day-1">
-                            <input type="checkbox" class="tui-full-calendar-checkbox-square" value="toggle-start-day-1">
-                            <span class="checkbox-title"></span>Empezar Semana en Lunes
-                        </a>
-                    </li>
-                </ul>
-            </span>
-            <span id="menu-navi">
-                <button type="button" class="btn btn-default btn-sm move-today" data-action="move-today">Hoy</button>
-                <button type="button" class="btn btn-default btn-sm move-day" data-action="move-prev">
-                    <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-sm move-day" data-action="move-next">
-                    <i class="calendar-icon ic-arrow-line-right" data-action="move-next"></i>
-                </button>
-            </span>
-            <span id="renderRange" class="render-range"></span>
-        </div>
-        <div id="calendar"></div>
-    </div>
-
-    <script src="assets/js/core/jquery.3.2.1.min.js" type="text/javascript"></script>
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <script src="https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js"></script>
-    <script src="https://uicdn.toast.com/tui.time-picker/v2.0.3/tui-time-picker.min.js"></script>
-    <script src="https://uicdn.toast.com/tui.date-picker/v4.0.3/tui-date-picker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
-
-
-    <script src="assets/js/plugins/tui.calendar/tui-calendar.js"></script>
-    <script src="assets/js/plugins/tui.calendar/calendars.js"></script>
-    <script src="assets/js/plugins/tui.calendar/schedules.js"></script>
-    <!-- <script src="./js/theme/dooray.js"></script> -->
-    <script src="assets/js/calendario.js"></script>
+    <div id='calendar'></div>
 </body>
 
 </html>

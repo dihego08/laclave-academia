@@ -62,6 +62,7 @@ class html_notas_2 extends f{
                                                 <th>Examen</th>
                                                 <th>Fecha</th>
                                                 <th>Puntaje</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -139,7 +140,16 @@ class html_notas_2 extends f{
                         }, {
                             "data": "fecha"
                         }, {
-                            "data": "examen"
+                            "data": "examen",
+                            "render": function(a, b, c){
+                                return `<input type="text" class="form-control" id="txt_examen_${c.id}" value="${a}">`
+                            }
+                        }, {
+                            //"data": "examen",
+                            "render": function(a, b, c){
+                                //console.log(c);
+                                return `<span class="btn btn-sm btn-success" title="Actualizar Nota" onclick="actualizar_nota(${c.id});"><i class="fa fa-check"></i></span>`;
+                            }
                         }, ],
                         "language": {
                             "url": "'.$this->baseurl.'includes/datatables/Spanish.json"
@@ -197,6 +207,29 @@ class html_notas_2 extends f{
                             alertify.notify("<strong>Nota Registrada</strong> correctamente.", "custom-black", 3, function() {});
                         }else{
                             alertify.notify("<strong>Algo ha salido terriblemente mal</strong>.", "custom-black", 3, function() {});
+                        }
+                    });
+                }
+                function actualizar_nota(id){
+                    $.ajax({
+                        url: "' . $this->baseurl . INDEX . 'notas_2/actualizar_nota",
+                        type: "POST",
+                        dataType: "html",
+                        data: {
+                            "id": id,
+                            "examen": $("#txt_examen_"+id).val()
+                        },
+                        success: function(data) {
+                            var obj = JSON.parse(data);
+                            table = $(".datatable").DataTable();
+                            table.ajax.reload();
+                            
+                            if(obj.Result == "OK"){
+                                alertify.notify("Realizado Correctamente.</strong>", "custom-black", 4, function() {});
+                            }else{
+                                alertify.notify("Algo ha salido mal.</strong>", "custom-black", 4, function() {});
+                            }
+                            
                         }
                     });
                 }

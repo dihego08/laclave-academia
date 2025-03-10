@@ -58,11 +58,11 @@ function generateTime(schedule, renderStart, renderEnd) {
     var endDate = moment(renderEnd.getTime());
     var diffDate = endDate.diff(startDate, 'days');
 
-    schedule.isAllday = chance.bool({likelihood: 30});
+    schedule.isAllday = chance.bool({ likelihood: 30 });
     if (schedule.isAllday) {
         schedule.category = 'allday';
-    } else if (chance.bool({likelihood: 30})) {
-        schedule.category = SCHEDULE_CATEGORY[chance.integer({min: 0, max: 1})];
+    } else if (chance.bool({ likelihood: 30 })) {
+        schedule.category = SCHEDULE_CATEGORY[chance.integer({ min: 0, max: 1 })];
         if (schedule.category === SCHEDULE_CATEGORY[1]) {
             schedule.dueDateClass = 'morning';
         }
@@ -70,25 +70,25 @@ function generateTime(schedule, renderStart, renderEnd) {
         schedule.category = 'time';
     }
 
-    startDate.add(chance.integer({min: 0, max: diffDate}), 'days');
-    startDate.hours(chance.integer({min: 0, max: 23}))
+    startDate.add(chance.integer({ min: 0, max: diffDate }), 'days');
+    startDate.hours(chance.integer({ min: 0, max: 23 }))
     startDate.minutes(chance.bool() ? 0 : 30);
     schedule.start = startDate.toDate();
 
     endDate = moment(startDate);
     if (schedule.isAllday) {
-        endDate.add(chance.integer({min: 0, max: 3}), 'days');
+        endDate.add(chance.integer({ min: 0, max: 3 }), 'days');
     }
 
     schedule.end = endDate
-        .add(chance.integer({min: 1, max: 4}), 'hour')
+        .add(chance.integer({ min: 1, max: 4 }), 'hour')
         .toDate();
 
-    if (!schedule.isAllday && chance.bool({likelihood: 20})) {
-        schedule.goingDuration = chance.integer({min: 30, max: 120});
-        schedule.comingDuration = chance.integer({min: 30, max: 120});;
+    if (!schedule.isAllday && chance.bool({ likelihood: 20 })) {
+        schedule.goingDuration = chance.integer({ min: 30, max: 120 });
+        schedule.comingDuration = chance.integer({ min: 30, max: 120 });;
 
-        if (chance.bool({likelihood: 50})) {
+        if (chance.bool({ likelihood: 50 })) {
             schedule.end = schedule.start;
         }
     }
@@ -97,7 +97,7 @@ function generateTime(schedule, renderStart, renderEnd) {
 function generateNames() {
     var names = [];
     var i = 0;
-    var length = chance.integer({min: 1, max: 10});
+    var length = chance.integer({ min: 1, max: 10 });
 
     for (; i < length; i += 1) {
         names.push(chance.name());
@@ -106,26 +106,39 @@ function generateNames() {
     return names;
 }
 
-function generateRandomSchedule(calendar, renderStart, renderEnd) {
+function generateRandomSchedule(calendar, renderStart, renderEnd, sc) {
+    console.log("ESTOY EN RANDOM");
+    console.log(sc);
+    /*const xhr = new XMLHttpRequest();
+    xhr.open("POST", "logic/servicios.php?parAccion=getSchedule_list");
+    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    //const body = JSON.stringify(schedule);
+    xhr.onload = (response) => {
+        var obj = JSON.parse(response.target.responseText);
+        for (let key in obj) {
+            console.log(obj[key].title);
+        }
+    };
+    xhr.send();*/
     var schedule = new ScheduleInfo();
 
-    schedule.id = chance.guid();
-    schedule.calendarId = calendar.id;
+    schedule.id = sc.id;
+    schedule.calendarId = sc.id_categoria;
 
-    schedule.title = chance.sentence({words: 3});
-    schedule.body = chance.bool({likelihood: 20}) ? chance.sentence({words: 10}) : '';
-    schedule.isReadOnly = chance.bool({likelihood: 20});
+    schedule.title = sc.title;
+    schedule.body = sc.body;
+    schedule.isReadOnly = chance.bool({ likelihood: 20 });
     generateTime(schedule, renderStart, renderEnd);
 
-    schedule.isPrivate = chance.bool({likelihood: 10});
+    schedule.isPrivate = chance.bool({ likelihood: 10 });
     schedule.location = chance.address();
-    schedule.attendees = chance.bool({likelihood: 70}) ? generateNames() : [];
-    schedule.recurrenceRule = chance.bool({likelihood: 20}) ? 'repeated events' : '';
-    schedule.state = chance.bool({likelihood: 20}) ? 'Free' : 'Busy';
-    schedule.color = calendar.color;
-    schedule.bgColor = calendar.bgColor;
-    schedule.dragBgColor = calendar.dragBgColor;
-    schedule.borderColor = calendar.borderColor;
+    schedule.attendees = chance.bool({ likelihood: 70 }) ? generateNames() : [];
+    schedule.recurrenceRule = chance.bool({ likelihood: 20 }) ? 'repeated events' : '';
+    schedule.state = chance.bool({ likelihood: 20 }) ? 'Free' : 'Busy';
+    schedule.color = sc.color;
+    schedule.bgColor = sc.bgColor;
+    schedule.dragBgColor = sc.dragBgColor;
+    schedule.borderColor = sc.borderColor;
 
     if (schedule.category === 'milestone') {
         schedule.color = schedule.bgColor;
@@ -148,19 +161,37 @@ function generateRandomSchedule(calendar, renderStart, renderEnd) {
     }
 
     ScheduleList.push(schedule);
+    console.log(ScheduleList);
+    
 }
 
-function generateSchedule(viewName, renderStart, renderEnd) {
+async function generateSchedule(viewName, renderStart, renderEnd) {
     ScheduleList = [];
-    CalendarList.forEach(function(calendar) {
-        var i = 0, length = 10;
-        if (viewName === 'month') {
-            length = 3;
-        } else if (viewName === 'day') {
-            length = 4;
-        }
-        for (; i < length; i += 1) {
-            generateRandomSchedule(calendar, renderStart, renderEnd);
-        }
-    });
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "logic/servicios.php?parAccion=getSchedule_list");
+    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    //const body = JSON.stringify(schedule);
+    xhr.onload = (response) => {
+        var obj = JSON.parse(response.target.responseText);
+        CalendarList.forEach(function (calendar) {
+            console.log("CALENDARIO");
+            console.log(calendar);
+            console.log("CALENDARIO");
+            var i = 0, length = 10;
+            if (viewName === 'month') {
+                length = 3;
+            } else if (viewName === 'day') {
+                length = 4;
+            }
+            for (let key in obj.filter(item => item.id_categoria == calendar.id)) {
+                console.log(obj[key].title);
+                generateRandomSchedule(calendar, renderStart, renderEnd, obj[key]);
+            }
+        });
+    };
+    xhr.onerror = (error) => {
+        console.error('Request failed:', error);
+    };
+    xhr.send();
 }

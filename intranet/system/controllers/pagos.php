@@ -39,6 +39,10 @@ class pagos extends f
 		$sql = "SELECT p.*, CONCAT(u.apellidos, ', ', u.nombres) as alumno FROM usuarios as u, pagos as p WHERE p.id_usuario = u.id";
 		echo $this->modelo2->run_query($sql, false);
 	}
+	public function get_metodos_pagos(){
+		$sql = "SELECT * FROM metodos_pago;";
+		echo $this->modelo2->run_query($sql, false);
+	}
 	function save()
 	{
 		$_POST['foto'] = "";

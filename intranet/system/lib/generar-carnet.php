@@ -7,9 +7,16 @@ $id_alumno = $_GET['id'];
 include("env.php");
 
 require('picker/vendor/autoload.php');
-use Picqer\Barcode\BarcodeGeneratorHTML;
-$generator = new BarcodeGeneratorHTML();
+
+use Picqer\Barcode\BarcodeGeneratorPNG;
+
+$generator = new BarcodeGeneratorPNG();
 //echo $generator->getBarcode('123456789', $generator::TYPE_CODE_128);
+
+$query_configuracion = $mbd->prepare("SELECT * FROM settings ORDER BY id DESC LIMIT 1;");
+$query_configuracion->execute();
+$settings = $query_configuracion->fetch(PDO::FETCH_ASSOC);
+
 
 $query = $mbd->prepare("SELECT * FROM usuarios where id in (" . $id_alumno . ")");
 $query->execute();
@@ -21,12 +28,12 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     $query_horario->execute();
     $hora_inicio = '';
     $hora_fin = '';
-    $auxiliar_horario=0;
+    $auxiliar_horario = 0;
     while ($r = $query_horario->fetch(PDO::FETCH_ASSOC)) {
-        if($auxiliar_horario==0){
-            $hora_inicio = $r['hora_inicio'].' - '. $r['hora_fin'];
-        }else{
-            $hora_fin = $r['hora_inicio'].' - '. $r['hora_fin'];
+        if ($auxiliar_horario == 0) {
+            $hora_inicio = $r['hora_inicio'] . ' - ' . $r['hora_fin'];
+        } else {
+            $hora_fin = $r['hora_inicio'] . ' - ' . $r['hora_fin'];
         }
         $auxiliar_horario++;
     }
@@ -34,70 +41,63 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     if ($auxiliar == 0) {
         $carnets .= '<tr>';
         $carnets .= '<td style="width: 50%; padding-top: 1%; padding-bottom:2%; padding-left: 6%; padding-right: 16%; margin: 0;">
-        <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; ">
-            <div style=" width: 100%;">
-                    <div style="transform: scale(-1, 1);position:absolute; top: 0%;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/lib/img/us-map.png" style="width: 100%;">
-                    </div>
-                    
-                    <div style="transform: scale(-1, 1); z-index: -1;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/lib/img/us-map2.png" style="width: 100%;">
-                    </div>
-                </div>
-            <img src="https://laclave.diegoaranibar.com/img/logo.png" alt=""
-                style="background-color: greenyellow; padding: 2px; border-radius: 4px; width: 25%; position: absolute; top: 5%; left: 3%;">
-            <h5 style="color: white; position: absolute; top: -5%; right: 5%; font-size: 13px;">CARNET DE IDENTIFICACIÓN</h5>
-            <table style="width: 100%; margin-top: -10%;">
+        <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://laclave.diegoaranibar.com/intranet/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
+            
+            
+            
+            <table style="width: 100%; margin-top: 15%;">
                 <tr>
                     <td style="width: 30%;">
                         <img src="https://laclave.diegoaranibar.com/intranet/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
                     </td>
                     <td>
-                        <table border="0" style="width: 100%;">
+                        <table border="0" style="width: 100%;" >
                             <tr>
-                                <td style="width: 50%;">
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Nombres:</h5>
+                                <td style="width: 25%; padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Nombres:</h5>
                                 </td>
-                                <td style="width: 50%;">
-                                    <h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $row['nombres'] . '</h5>
+                                <td style="width: 75%; padding: 5px;">
+                                    <h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $row['nombres'] . '</h5>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Apellidos:</h5>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Apellidos:</h5>
                                 </td>
-                                <td>
-                                    <h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $row['apellidos'] . '</h5>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $row['apellidos'] . '</h5>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Horario:</h5>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Horario:</h5>
                                 </td>
-                                <td><h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $hora_inicio . '<br>'.$hora_fin.'</h5></td>
+                                <td style=" padding: 5px;"><h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $hora_inicio . '<br>' . $hora_fin . '</h5></td>
                             </tr>
                             <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Código:</h5>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Código:</h5>
                                 </td>
-                                <td>
-                                    <h5 style="font-size: 5px; margin: 0px 0px 0px 0px;">' .  $generator->getBarcode($row['dni'], $generator::TYPE_CODE_128) . '</h5>
+                                <td style="text-align: center; font-size: 0.70rem;padding: 5px;">
+                                    <div style="width: 100%; text-align: center;">
+                                        <img style="width: 80%;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($row['dni'], $generator::TYPE_CODE_128)) . '">
+                                    </div>
+                                    <span style="display: block;">' . $row['dni'] . '</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h5 style="font-size: 1.2rem; font-weight: 700; margin: 0 !important; color: ' . $settings['color_texto'] . '; text-align: right; display: block; width: 100%;">
+                                        ' . date("Y") . '
+                                    </h5>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <img src="https://laclave.diegoaranibar.com/img/logo.png" alt="" style="    opacity: 0.3;
-            position: absolute;
-            right: 0%;
-            top: 40%;
-            transform: rotate(135deg) scale(-1, -1);
-            width: 40%;
-            z-index: 0;">
-            <h5 style="position: absolute; font-size: 15px; font-weight: 700; color: green; right: 2%; bottom: -14%;">
-                2024
-            </h5>
+            
+            
             </div>
         </td>';
     } elseif ($auxiliar > 1) {
@@ -105,21 +105,10 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
         $auxiliar = 0;
         $carnets .= '<tr>';
         $carnets .= '<td style="width: 50%; padding-top: 1%; padding-bottom:2%; padding-left: 6%; padding-right: 16%; margin: 0; min-height: 400px;">
-            <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; ">
-                <div style=" width: 100%;">
-                    <div style="transform: scale(-1, 1);position:absolute; top: 0%;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/lib/img/us-map.png" style="width: 100%;">
-                    </div>
-                    
-                    <div style="transform: scale(-1, 1); z-index: -1;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/lib/img/us-map2.png" style="width: 100%;">
-                    </div>
-                </div>
-
-                <img src="https://laclave.diegoaranibar.com/img/logo.png" alt=""
-                    style="background-color: greenyellow; padding: 2px; border-radius: 4px; width: 25%; position: absolute; top: 2%; left: 3%;">
-                <h5 style="color: white; position: absolute; top: -5%; right: 5%; font-size: 13px;">CARNET DE IDENTIFICACIÓN</h5>
-                <table style="width: 100%; margin-top: -10%;">
+            <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://laclave.diegoaranibar.com/intranet/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
+                
+                
+                <table style="width: 100%; margin-top: 15%;">
                 <tr>
                     <td style="width: 30%;">
                         <img src="https://laclave.diegoaranibar.com/intranet/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
@@ -127,67 +116,58 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                     <td>
                         <table border="0" style="width: 100%;">
                             <tr>
-                                <td style="width: 50%;">
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Nombres:</h5>
+                                <td style="width: 25%; padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Nombres:</h5>
                                 </td>
-                                <td style="width: 50%;">
-                                    <h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $row['nombres'] . '</h5>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Apellidos:</h5>
-                                </td>
-                                <td>
-                                    <h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $row['apellidos'] . '</h5>
+                                <td style="width: 75%; padding: 5px;">
+                                    <h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $row['nombres'] . '</h5>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Horario:</h5>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Apellidos:</h5>
                                 </td>
-                                <td><h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $hora_inicio . '<br>'.$hora_fin.'</h5></td>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $row['apellidos'] . '</h5>
+                                </td>
                             </tr>
                             <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Código:</h5>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Horario:</h5>
                                 </td>
-                                <td>
-                                    <h5 style="font-size: 5px; margin: 0px 0px 0px 0px;">' .  $generator->getBarcode($row['dni'], $generator::TYPE_CODE_128) . '</h5>
+                                <td style=" padding: 5px;"><h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $hora_inicio . '<br>' . $hora_fin . '</h5></td>
+                            </tr>
+                            <tr>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Código:</h5>
+                                </td>
+                                <td style="text-align: center; font-size: 0.70rem; padding: 5px;">
+                                    <div style="width: 100%; text-align: center;">
+                                        <img style="width: 80%;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($row['dni'], $generator::TYPE_CODE_128)) . '">
+                                    </div>
+                                    <span style="display: block;">' . $row['dni'] . '</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h5 style="font-size: 1.2rem; font-weight: 700; margin: 0 !important; color: ' . $settings['color_texto'] . '; text-align: right; display: block; width: 100%;">
+                                        ' . date("Y") . '
+                                    </h5>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-                <img src="https://laclave.diegoaranibar.com/img/logo.png" alt="" style="    opacity: 0.3;
-                position: absolute;
-                right: 0%;
-                top: 40%;
-                transform: rotate(135deg) scale(-1, -1);
-                width: 40%;
-                z-index: 0;">
-            <h5 style="position: absolute; font-size: 15px; font-weight: 700; color: green; right: 2%; bottom: -14%;">
-                2024
-            </h5>
             </div>
         </td>';
     } else {
         $carnets .= '<td style="width: 50%; padding-top: 1%; padding-bottom:2%; padding-left: 6%; padding-right: 16%; margin: 0; min-height: 400px;">
-        <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; ">
-            <div style=" width: 100%;">
-                    <div style="transform: scale(-1, 1);position:absolute; top: 0%;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/lib/img/us-map.png" style="width: 100%;">
-                    </div>
-                    
-                    <div style="transform: scale(-1, 1); z-index: -1;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/lib/img/us-map2.png" style="width: 100%;">
-                    </div>
-                </div>
-            <img src="https://laclave.diegoaranibar.com/img/logo.png" alt=""
-                style="background-color: greenyellow; padding: 2px; border-radius: 4px; width: 25%; position: absolute; top: 5%; left: 3%;">
-            <h5 style="color: white; position: absolute; top: -5%; right: 5%; font-size: 13px;">CARNET DE IDENTIFICACIÓN</h5>
-            <table style="width: 100%; margin-top: -10%;">
+        <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://laclave.diegoaranibar.com/intranet/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
+            
+            
+            
+            <table style="width: 100%; margin-top: 15%;">
                 <tr>
                     <td style="width: 30%;">
                         <img src="https://laclave.diegoaranibar.com/intranet/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
@@ -195,49 +175,49 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
                     <td>
                         <table border="0" style="width: 100%;">
                             <tr>
-                                <td style="width: 50%;">
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Nombres:</h5>
+                                <td style="width: 25%; padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Nombres:</h5>
                                 </td>
-                                <td style="width: 50%;">
-                                    <h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $row['nombres'] . '</h5>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Apellidos:</h5>
-                                </td>
-                                <td>
-                                    <h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $row['apellidos'] . '</h5>
+                                <td style="width: 75%; padding: 5px;">
+                                    <h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $row['nombres'] . '</h5>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Horario:</h5>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Apellidos:</h5>
                                 </td>
-                                <td><h5 style="font-size: 9px; margin: 0px 0px 0px 0px;">' . $hora_inicio . '<br>'.$hora_fin.'</h5></td>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $row['apellidos'] . '</h5>
+                                </td>
                             </tr>
                             <tr>
-                                <td>
-                                    <h5 style="font-size: 10px; margin: 0px 0px 0px 0px; color: green;">Código:</h5>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Horario:</h5>
                                 </td>
-                                <td>
-                                    <h5 style="font-size: 5px; margin: 0px 0px 0px 0px;">' .  $generator->getBarcode($row['dni'], $generator::TYPE_CODE_128) . '</h5>
+                                <td style=" padding: 5px;"><h5 style="font-size: 0.6rem; margin: 0px 0px 0px 0px;">' . $hora_inicio . '<br>' . $hora_fin . '</h5></td>
+                            </tr>
+                            <tr>
+                                <td style=" padding: 5px;">
+                                    <h5 style="font-size: 0.70rem; margin: 0px 0px 0px 0px; color: ' . $settings['color_texto'] . ';">Código:</h5>
+                                </td>
+                                <td style="text-align: center; font-size: 0.70rem; padding: 5px;">
+                                    <div style="width: 100%; text-align: center;">
+                                        <img style="width: 80%;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($row['dni'], $generator::TYPE_CODE_128)) . '">
+                                    </div>
+                                    <span style="display: block;">' . $row['dni'] . '</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h5 style="font-size: 1.2rem; font-weight: 700; margin: 0 !important; color: ' . $settings['color_texto'] . '; text-align: right; display: block; width: 100%;">
+                                        ' . date("Y") . '
+                                    </h5>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <img src="https://laclave.diegoaranibar.com/img/logo.png" alt="" style="    opacity: 0.3;
-            position: absolute;
-            right: 0%;
-            top: 40%;
-            transform: rotate(135deg) scale(-1, -1);
-            width: 40%;
-            z-index: 0;">
-            <h5 style="position: absolute; font-size: 15px; font-weight: 700; color: green; right: 2%; bottom: -14%;">
-                2024
-            </h5>
             </div>
         </td>';
     }
@@ -247,9 +227,9 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
 require_once 'dompdf/dompdf/vendor/autoload.php';
 
 $im = new Imagick();
- $im->setBackgroundColor(new ImagickPixel('transparent'));
+$im->setBackgroundColor(new ImagickPixel('transparent'));
 $im->readImageBlob('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-    <path fill="#003399" fill-opacity="1"
+    <path fill="' . $settings['color_principal'] . '" fill-opacity="1"
         d="M0,96L80,122.7C160,149,320,203,480,192C640,181,800,107,960,112C1120,117,1280,203,1360,245.3L1440,288L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z">
     </path>
 </svg>');
@@ -267,9 +247,9 @@ $im->clear();
 $im->destroy();
 
 $im = new Imagick();
- $im->setBackgroundColor(new ImagickPixel('transparent'));
+$im->setBackgroundColor(new ImagickPixel('transparent'));
 $im->readImageBlob('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-    <path fill="#009933" fill-opacity="1"
+    <path fill="' . $settings['color_secundario'] . '" fill-opacity="1"
         d="M0,96L80,122.7C160,149,320,203,480,192C640,181,800,107,960,112C1120,117,1280,203,1360,245.3L1440,288L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z">
     </path>
 </svg>');
@@ -312,7 +292,7 @@ $dompdf->loadHtml($html);
 
 // (Optional) Setup the paper size and orientation
 $dompdf->setPaper('A4', 'portrait');
-
+$dompdf->set_option('dpi', 300); 
 // Render the HTML as PDF
 $dompdf->render();
 

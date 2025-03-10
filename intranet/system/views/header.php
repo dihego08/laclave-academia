@@ -2,9 +2,7 @@
 class Header
 {
     var $el_titulo = "";
-    function Header()
-    {
-    }
+    function Header() {}
     function PrintHeader($data)
     {
         $baseurl = BASEURL;
@@ -102,7 +100,7 @@ class Header
             <div class="logo">
                 <a href="#" class="simple-text logo-mini">
                     <div class="logo-image-small">
-                        <img src="/img/logo.png">
+                        <img src="assets/img/logo.png">
                     </div>
                 </a>
                 <a href="#" class="simple-text logo-normal a_nombre">
@@ -135,9 +133,9 @@ class Header
                     <li class="nav-item">
                         <a id="" class="nav-link" href="' . $baseurl . INDEX . 'asistencia_diaria_2/">Reporte Asistencias</a>
                     </li>
-                    <li class="nav-item">
+                    <!--<li class="nav-item">
                         <a id="" class="nav-link" href="' . $baseurl . INDEX . 'aulas/">Asignación de Aulas</a>
-                    </li>
+                    </li>-->
                     <li class="nav-item">
                         <a id="" class="nav-link" href="' . $baseurl . INDEX . 'clasificacion_alumnos/">Clasificación de Alumnos</a>
                     </li>
@@ -152,6 +150,11 @@ class Header
                     <li class="nav-item">
                         <a id="" class="nav-link" href="' . $baseurl . INDEX . 'biblioteca/">Biblioteca</a>
                     </li>
+                    
+                    <li class="nav-item">
+                        <a id="" class="nav-link" href="' . $baseurl . INDEX . 'configuracion_carnet/">Configuracion Carnet</a>
+                    </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Control </a>
                         <div class="dropdown-menu">
@@ -170,6 +173,7 @@ class Header
                             <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'universidades/">Universidades</a>
                             <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'proveedores/">Proveedores</a>
                             <a id="" class="dropdown-item" href="' . $baseurl . INDEX . 'gastos/">Gastos</a>
+                            <a id="" class="nav-link" href="' . $baseurl . INDEX . 'aulas/">Aulas</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">

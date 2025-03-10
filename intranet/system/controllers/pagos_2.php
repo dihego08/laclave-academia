@@ -34,9 +34,17 @@ class pagos_2 extends f
 		} else
 			$this->Login();
 	}
+	public function get_metodos_pagos()
+	{
+		$sql = "SELECT * FROM metodos_pago;";
+		echo $this->modelo2->run_query($sql, false);
+	}
 	public function loadpagos()
 	{
-		$sql = "SELECT p.*, CONCAT(u.apellidos, ', ', u.nombres) as alumno FROM usuarios as u, pagos_2 as p WHERE p.id_usuario = u.id";
+		//$sql = "SELECT p.*, CONCAT(u.apellidos, ', ', u.nombres) as alumno, '' metodo_pago FROM usuarios as u, pagos_2 as p WHERE p.id_usuario = u.id";
+
+		$sql = "SELECT p.*, CONCAT(u.apellidos, ', ', u.nombres) as alumno, m.metodo_pago FROM usuarios as u JOIN pagos_2 as p ON p.id_usuario = u.id LEFT JOIN metodos_pago m ON m.id = p.id_metodo_pago;";
+
 		echo $this->modelo2->run_query($sql, false);
 	}
 	public function loadpagos_2()
@@ -44,13 +52,107 @@ class pagos_2 extends f
 		$sql = "SELECT p.*, CONCAT(u.apellidos, ', ', u.nombres) as alumno FROM usuarios as u, pagos_2 as p WHERE p.id_usuario = u.id and p.fecha between '" . $_GET['fecha_desde'] . "' AND '" . $_GET['fecha_hasta'] . "'";
 		echo $this->modelo2->run_query($sql, false);
 	}
-	public function deuda(){
+	public function deuda()
+	{
 		$sql = "SELECT pension FROM usuarios WHERE id = " . $_POST['id_alumno'] . ";";
 		echo $this->modelo2->run_query($sql, false);
 	}
+	function updatePago()
+	{
+		$_POST['foto_comprobante'] = "";
+		$_POST['fproceso'] = "";
+		$aux = 0;
+		//if (isset($_FILES["foto"])) {
+		$fileName = $_FILES["foto"]["name"];
+		$fileTmpLoc = $_FILES["foto"]["tmp_name"];
+		$fileType = $_FILES["foto"]["type"];
+		$fileSize = $_FILES["foto"]["size"];
+		$fileErrorMsg = $_FILES["foto"]["error"];
+		if (!$fileTmpLoc) {
+			//exit();
+		}
+
+		if (move_uploaded_file($fileTmpLoc, $_SERVER['DOCUMENT_ROOT'] . "/intranet/system/controllers/comprobantes_pago/$fileName")) {
+			$_POST['foto_comprobante'] = $fileName;
+			$aux++;
+		}
+		//}
+		//if ($_POST['adeuda'] > 0) {
+		//$res = json_decode($this->modelo2->insert_data("pagos_2", $_POST, false));
+
+		$this->modelo2->executor("UPDATE pagos_2 SET monto = monto + " . $_POST['pago'] . ", adeuda = adeuda - " . $_POST['pago'] . " WHERE id = " . $_POST['id'], "update");
+
+		$data = array();
+		$data['id_pago'] = $_POST['id'];
+		$data['adeuda'] = $_POST['adeuda'] - $_POST['pago'];
+		$data['pago'] = $_POST['pago'];
+		$data['fecha_creacion'] = date("Y-m-d H:i:s");
+		$data['fecha_pago'] = $_POST['fecha'];
+		$data['foto_comprobante'] = $_POST['foto_comprobante'];
+		$data['id_metodo_pago'] = $_POST['id_metodo_pago'];
+		$data['id_concepto'] = $_POST['id_concepto'];
+		echo $this->modelo2->insert_data("pagos_parciales", $data, false);
+		/*} else {
+			echo $this->modelo2->insert_data("pagos_2", $_POST, false);
+		}*/
+	}
 	function save()
 	{
-		echo $this->modelo2->insert_data("pagos_2", $_POST, false);
+		$_POST['foto_comprobante'] = "";
+		$_POST['fproceso'] = "";
+		$_POST['fproceso'] = date("Y-m-d H:i:s");
+		$aux = 0;
+		//if (isset($_FILES["foto"])) {
+		$fileName = $_FILES["foto"]["name"];
+		$fileTmpLoc = $_FILES["foto"]["tmp_name"];
+		$fileType = $_FILES["foto"]["type"];
+		$fileSize = $_FILES["foto"]["size"];
+		$fileErrorMsg = $_FILES["foto"]["error"];
+		if (!$fileTmpLoc) {
+			//exit();
+		}
+
+		if (move_uploaded_file($fileTmpLoc, $_SERVER['DOCUMENT_ROOT'] . "/intranet/system/controllers/comprobantes_pago/$fileName")) {
+			$_POST['foto_comprobante'] = $fileName;
+			$aux++;
+		}
+		//}
+		if ($_POST['adeuda'] > 0) {
+			$res = json_decode($this->modelo2->insert_data("pagos_2", $_POST, false));
+			$data = array();
+			$data['id_pago'] = $res->LID;
+			$data['adeuda'] = $_POST['adeuda'];
+			$data['pago'] = $_POST['monto'];
+			$data['fecha_creacion'] = date("Y-m-d H:i:s");
+			$data['fecha_pago'] = $_POST['fecha'];
+			$data['foto_comprobante'] = $_POST['foto_comprobante'];
+			$data['id_metodo_pago'] = $_POST['id_metodo_pago'];
+			$data['id_concepto'] = $_POST['id_concepto'];
+			echo $this->modelo2->insert_data("pagos_parciales", $data, false);
+		} else {
+			if (strlen($_POST['fecha_desde']) > 0 && strlen($_POST['fecha_hasta']) > 0) {
+				$monto = $_POST['monto'];
+				$datetime1 = new DateTime($_POST['fecha_desde']);
+
+				$datetime2 = new DateTime($_POST['fecha_hasta']);
+
+				$diferencia = $datetime1->diff($datetime2);
+				$meses = ($diferencia->y * 12) + $diferencia->m;
+
+				// Sumar 1 si la diferencia en días es mayor a 0 o si quieres contar inclusivamente el mes de inicio
+				if ($diferencia->d >= 0 || $datetime1->format('d') == 1) {
+					$meses += 1;
+				}
+
+				for ($i = 0; $i < $meses; $i++) {
+					$_POST['fecha'] = date("Y-m-d", strtotime($_POST['fecha_desde'] . "+$i month"));
+					$_POST['monto'] = $monto / $meses;
+					$this->modelo2->insert_data("pagos_2", $_POST, false);
+				}
+			} else {
+				echo $this->modelo2->insert_data("pagos_2", $_POST, false);
+			}
+		}
 	}
 	function eliminar()
 	{

@@ -51,6 +51,14 @@ class alumnos extends f
 	{
 		echo $this->modelo2->executor("UPDATE usuarios set estado = 1 WHERE id = " . $_POST['id'], "update");
 	}
+	function llenar_conceptos_alumno()
+	{
+		echo $this->modelo2->run_query("SELECT c.concepto, ca.* FROM conceptos AS c JOIN concepto_alumno AS ca ON ca.id_concepto = c.id WHERE ca.id_usuario = " . $_POST['id'], false);
+	}
+	function llenar_conceptos()
+	{
+		echo $this->modelo2->select_all("conceptos", true);
+	}
 	function rem_index()
 	{
 		echo $this->modelo2->executor("UPDATE usuarios set estado = 0 WHERE id = " . $_POST['id'], "update");
@@ -82,7 +90,7 @@ class alumnos extends f
 	public function loadalumnos()
 	{
 		/*$sql = "SELECT us.*, g.grupo, a.area, u.universidad, ci.ciclo, c.carrera FROM usuarios as us, grupos as g, areas as a, universidades as u, carreras as c, ciclos as ci WHERE us.id_grupo = g.id AND g.id_ciclo = ci.id AND us.id_carrera = c.id AND c.id_universidad = u.id AND ci.id_universidad = u.id AND c.id_area = a.id";*/
-		$sql = "SELECT us.* , g.grupo, a.area, u.universidad, ci.ciclo, c.carrera FROM usuarios as us left join grupos as g on us.id_grupo = g.id left join carreras as c on us.id_carrera = c.id left join universidades as u on c.id_universidad = u.id left join ciclos as ci on ci.id_universidad = u.id AND g.id_ciclo = ci.id left join areas as a on c.id_area = a.id;";
+		$sql = "SELECT us.* , g.grupo, a.area, u.universidad, ci.ciclo, c.carrera, COALESCE(au.aula, al.aula) aula FROM usuarios as us left join grupos as g on us.id_grupo = g.id left join carreras as c on us.id_carrera = c.id left join universidades as u on c.id_universidad = u.id left join ciclos as ci on ci.id_universidad = u.id AND g.id_ciclo = ci.id left join areas as a on c.id_area = a.id LEFT JOIN aulas as au ON au.id = us.id_aula LEFT JOIN aulas AS al ON al.id = us.id_aula_designada;";
 
 		$alumnos = json_decode($this->modelo2->run_query($sql, false));
 
@@ -93,7 +101,6 @@ class alumnos extends f
 
 			$value->carrera = "<p><span class=\"w-100\" style=\"display: block;\">" . $value->carrera . "</span><small>" . $value->area . " - " . $value->universidad . "</small></p>";
 			$value->ciclo = "<p class=\"text-center\"><span class=\"w-100\" style=\"display: block;\">" . $value->ciclo . " -</span><small>" . $value->grupo . "</small></p>";
-
 			$result[] = $value;
 		}
 		echo json_encode($result);
@@ -185,7 +192,23 @@ class alumnos extends f
 		if (isset($alumno->nombres)) {
 			echo json_encode(array("Result" => "ERROR", "Code" => "125"));
 		} else {
-			echo $this->modelo2->insert_data("usuarios", $_POST, false);
+			//conceptos_pagos
+			//$_POST['fecha_pago'] = date("d", strtotime($_POST));
+			$res = json_decode($this->modelo2->insert_data("usuarios", $_POST, false));
+			$_POST["conceptos_pagos"] = json_decode($_POST["conceptos_pagos"]);
+			foreach ($_POST["conceptos_pagos"] as $key => $value) {
+				//$value = json_decode($value);
+				$data['id_concepto'] = $value->id_concepto;
+				$data['id_usuario'] = $res->LID;
+				$data['monto'] = $value->monto;
+				$data['fecha_pago'] = $value->fecha_pago;
+				$data['fecha_creacion'] = date("Y-m-d H:i:s");
+				$this->modelo2->insert_data("concepto_alumno", $data, false);
+				if ($value->id_concepto == 2) {
+					$this->modelo2->executor("UPDATE usuarios set fecha_pago = '" . date("d", strtotime($value->fecha_pago)) . "' WHERE id = " . $res->LID, "update");
+				}
+			}
+			echo json_encode(array("Result" => "OK"));
 		}
 	}
 	function eliminar()
@@ -199,9 +222,12 @@ class alumnos extends f
 		unset($alumno->pass);
 
 		$pago = json_decode($this->modelo2->select_one("pagos", array("id_usuario" => $_POST["id"])));
+		//$conceptos = json_decode($this->modelo2->select_all_where("concepto_alumno", ["id_alumno" => $_POST["id"]]));
+		$conceptos = json_decode($this->modelo2->run_query("SELECT c.concepto, ca.* FROM conceptos AS c JOIN concepto_alumno AS ca ON ca.id_concepto = c.id WHERE ca.id_usuario = " . $_POST['id'], false));
 
 		$alumno->n_cuotas = $pago->n_cuotas;
 		$alumno->monto = $pago->monto;
+		$alumno->conceptos = $conceptos;
 
 		echo json_encode($alumno);
 	}
@@ -237,7 +263,23 @@ class alumnos extends f
 				$_POST["foto"] = "";
 			}
 		}
-		echo $this->modelo2->update_data("usuarios", $_POST);
+		$this->modelo2->update_data("usuarios", $_POST);
+
+		$_POST["conceptos_pagos"] = json_decode($_POST["conceptos_pagos"]);
+		$this->modelo2->delete_data('concepto_alumno', array("id_usuario" => $_POST["id"]));
+		foreach ($_POST["conceptos_pagos"] as $key => $value) {
+			//$value = json_decode($value);
+			$data['id_concepto'] = $value->id_concepto;
+			$data['id_usuario'] = $_POST["id"];
+			$data['monto'] = $value->monto;
+			$data['fecha_pago'] = $value->fecha_pago;
+			$data['fecha_creacion'] = date("Y-m-d H:i:s");
+			$this->modelo2->insert_data("concepto_alumno", $data, false);
+			if ($value->id_concepto == 2) {
+				$this->modelo2->executor("UPDATE usuarios set fecha_pago = '" . date("d", strtotime($value->fecha_pago)) . "' WHERE id = " . $_POST["id"], "update");
+			}
+		}
+		echo json_encode(array("Result" => "OK"));
 	}
 	private function valida($level)
 	{

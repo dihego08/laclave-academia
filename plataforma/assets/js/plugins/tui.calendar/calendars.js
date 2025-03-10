@@ -44,6 +44,7 @@ function hexToRGBA(hex) {
 (function () {
     var calendar;
     var id = 0;
+    console.log("ESTAMOS AKISIMISO");
     var calendarList = document.getElementById('calendarList');
     var html = [];
     $.post('logic/servicios.php?parAccion=getSchedule_category', function (responseText) {
@@ -67,5 +68,6 @@ function hexToRGBA(hex) {
 
         });
         calendarList.innerHTML = html.join('\n');
+        $(".move-today").click();
     });
 })();

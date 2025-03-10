@@ -19,10 +19,6 @@ class html_alumnos extends f
                 .select2-container{
                     width: 100% !important;
                 }
-                /*#myelement {
-                    position: relative;
-                    overflow: hidden;
-                  }*/
                   #myelement {
                     /*content: "";
                     position: absolute;
@@ -71,6 +67,7 @@ class html_alumnos extends f
                                                 <th>Correos</th>
                                                 <th>Carrera</th>
                                                 <th>Ciclo -<br> Grupo</th>
+                                                <th>Aula</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -151,13 +148,18 @@ class html_alumnos extends f
                                         <select class="form-control" id="ins_grupo">
                                         </select>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <label for="">Carrera</label>
                                         <select class="form-control" id="ins_carrera">
                                         </select>
                                     </div>
+                                    <div class="col-md-6">
+                                        <label for="">Aula Específica</label>
+                                        <select class="form-control" id="id_aula">
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-12 mb-2 form-row">
+                                <!--<div class="col-12 mb-2 form-row">
                                     <div class="col-6 col-md-6">
                                         <label>Día de Pago de Mensualidad</label>
                                         <select class="form-control" id="fecha_pago" name="fecha_pago">
@@ -198,7 +200,7 @@ class html_alumnos extends f
                                         <label>Monto Pago Pensión</label>
                                         <input type="text" class="form-control" id="pension" name="pension" placeholder="Ex: 500.00">
                                     </div>
-                                </div>
+                                </div>-->
                                 <div class="col-md-12 form-row">
                                     <div class="col-md-6 text-center">    
                                         <label class="w-100">Foto</label>
@@ -210,7 +212,43 @@ class html_alumnos extends f
                                         <img class="mt-2" src="" id="profile-img-tag" width="200px" style="margin-left: auto;margin-right: auto;" />
                                     </div>
                                 </div>
+                                <div class="col-md-12 form-row">
+                                    <div class="col-md-4">
+                                        <label class="w-100">Concepto Pago</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="w-100">Fecha de Pago</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="w-100">Monto</label>
+                                    </div>
+                                    <div class="col-md-2"></div>
 
+                                    <div class="col-md-4">
+                                        <select class="form-control" id="id_concepto"></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" id="fecha_pago" class="form-control datepicker">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" id="monto" class="form-control">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="btn btn-outline-success btn-sm m-0 h-100" onclick="add_conceptos();">
+                                            <i class="fa fa-plus"></i>
+                                        </span>
+                                    </div>
+                                    <hr class="w-100">
+                                    <table class="table table-sm" id="tabla-conceptos">
+                                        <thead>
+                                            <th>Concepto</th>
+                                            <th>Fecha</th>
+                                            <th>Monto</th>
+                                            <th></th>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                                 <div class="col-md-12 mt-3">
                                     <progress id="progressBar" class="mt-2" value="0" max="100" style="width:100%;"></progress>
                                     <p id="status"></p>
@@ -343,9 +381,53 @@ class html_alumnos extends f
                         });
                     });
                 }
+                function llenar_aulas(){
+                    $.post("' . $this->baseurl . INDEX . 'aulas/loadaulas/", function(response){
+                        var obj = JSON.parse(response);
+
+                        $("#id_aula").empty();
+                        $("#id_aula").append(`<option value="0" selected>--SELECCIONE--</option>`);
+                        $.each(obj, function(index, val){
+                            $("#id_aula").append(`<option value="${val.id}" >${val.aula}</option>`);
+                        });
+                    });
+                }
+                function llenar_conceptos(){
+                    $.post("' . $this->baseurl . INDEX . 'alumnos/llenar_conceptos/", function(response){
+                        var obj = JSON.parse(response);
+
+                        $("#id_concepto").empty();
+                        $("#id_concepto").append(`<option value="0" selected>--SELECCIONE--</option>`);
+                        $.each(obj, function(index, val){
+                            $("#id_concepto").append(`<option value="${val.id}" >${val.concepto}</option>`);
+                        });
+                    });
+                }
+                    var conceptos_pagos = [];
+                function add_conceptos(){
+                    conceptos_pagos.push({
+                        id_concepto:$("#id_concepto").val(),
+                        fecha_pago:$("#fecha_pago").val(),
+                        monto:$("#monto").val()
+                    });
+
+                    $("#tabla-conceptos").find("tbody").append(`<tr id="tr_${$("#id_concepto").val()}">
+                        <td>${$("#id_concepto option:selected").text()}</td>
+                        <td>${$("#fecha_pago").val()}</td>
+                        <td>${$("#monto").val()}</td>
+                        <td><span style="cursor: pointer;" class="btn btn-outline-danger btn-sm" onclick="remove_concepto(${$("#id_concepto").val()});"><i class="fa fa-trash"></i></span></td>
+                    </tr>`);
+                    console.log(conceptos_pagos);
+                }
+                function remove_concepto(id){
+                    conceptos_pagos = conceptos_pagos.filter((item) => item.id_concepto != id);
+                    $("#tr_"+id).remove();
+                }
                 $(document).ready(function() {
                     var ids_alumnos = 0;
                     llenar_universidades();
+                    llenar_aulas();
+                    llenar_conceptos();
 
                     $("#ins_universidad").on("change", function(){
                         if($(this).val() == -1 || $(this).val() == "-1"){
@@ -463,6 +545,8 @@ class html_alumnos extends f
                             "data": "carrera"
                         }, {
                             "data": "ciclo"
+                        }, {
+                            "data": "aula"
                         }, ],
                         "language": {
                             "url": "' . $this->baseurl . 'includes/datatables/Spanish.json"
@@ -611,6 +695,8 @@ class html_alumnos extends f
                     $("#ins_correo_corporativo").val("");
                     $("#id_padre").val("");
                     $("#pension").val("");
+                    conceptos_pagos = [];
+                    $("#tabla-conceptos").find("tbody").empty();
                     $("#profile-img-tag").attr("src", "");
                     $("#btn_finalizar").text("Guardar");
                 }
@@ -637,13 +723,34 @@ class html_alumnos extends f
                             
                             $("#pension").val(data.pension);
 
-                            $("#fecha_pago").val(data.fecha_pago);
+                            //$("#fecha_pago").val(data.fecha_pago);
+                            
+                            $("#id_aula_designada").val(data.id_aula_designada);
 
                             $("#profile-img-tag").attr("src", "system/controllers/photo/"+data.foto);
 
                             llenar_ciclos(data.id_universidad, data.id_ciclo);
                             llenar_carreras(data.id_universidad, data.id_carrera);
                             llenar_grupos(data.id_ciclo, data.id_grupo);
+
+                            $("#tabla-conceptos").find("tbody").empty();
+
+                            $.each(data.conceptos, function(index, val){
+                                conceptos_pagos.push({
+                                    id_concepto: val.id_concepto,
+                                    fecha_pago:val.fecha_pago,
+                                    monto:val.monto
+                                });
+
+                                $("#tabla-conceptos").find("tbody").append(`<tr id="tr_${val.id_concepto}">
+                                    <td>${val.concepto}</td>
+                                    <td>${val.fecha_pago}</td>
+                                    <td>${val.monto}</td>
+                                    <td><span style="cursor: pointer;" class="btn btn-outline-danger btn-sm" onclick="remove_concepto(${val.id_concepto});"><i class="fa fa-trash"></i></span></td>
+                                </tr>`);
+                            });
+                            
+
                             
                             $("#btn_finalizar").attr("onclick", "actualizar_alumno("+data.id+");");
                             $("#btn_finalizar").text("Actualizar");
@@ -685,6 +792,10 @@ class html_alumnos extends f
                         formdata.append("fecha_pago", $("#fecha_pago").val());
                         formdata.append("pension", $("#pension").val());
                         
+                        //id_aula_designada
+                        formdata.append("id_aula_designada", $("#id_aula").val());
+                        formdata.append("conceptos_pagos", JSON.stringify(conceptos_pagos));
+                        
                         var ajax = new XMLHttpRequest();
                         ajax.upload.addEventListener("progress", progressHandler, false);
                         ajax.addEventListener("load", completeHandler, false);
@@ -723,7 +834,9 @@ class html_alumnos extends f
 
                         formdata.append("fecha_pago", $("#fecha_pago").val());
                         formdata.append("pension", $("#pension").val());
-
+                        
+                        formdata.append("id_aula_designada", $("#id_aula").val());
+                        formdata.append("conceptos_pagos", JSON.stringify(conceptos_pagos));
                         formdata.append("id", id);
                         
                         var ajax = new XMLHttpRequest();

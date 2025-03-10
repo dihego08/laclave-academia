@@ -195,6 +195,11 @@
 	    function editarBD(){
 	        echo $this->modelo3->update_data("tbl_notas", $_POST);
 	    }
+	    function actualizar_nota(){
+	        $sql = "UPDATE tbl_notas SET examen = ".$_POST['examen']." WHERE id = ".$_POST['id'];
+	        echo $this->modelo3->executor($sql, "update");
+	        //print_r($_POST);
+	    }
 	    private function valida($level) {
 	        if (isset($_SESSION["user_level"])) {
 	            if ($_SESSION["user_level"] == $level) {

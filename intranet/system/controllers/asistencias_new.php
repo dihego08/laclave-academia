@@ -89,7 +89,24 @@ class asistencias_new extends f
 
 			$alumno = json_decode($alumno);
 			$aula = json_decode($this->modelo3->select_one("aulas", array('id' => $alumno->id_aula)));
+			$aula_alumno = "Sin aula";
+			if (empty($aula)) {
+				$aula = json_decode($this->modelo3->select_one("aulas", array('id' => $alumno->id_aula_designada)));
+				$aula_alumno = $aula->aula;
+			}elseif(is_null($aula->aula) || empty($aula->aula)){
+				
+			}else{
+				$aula_alumno = $aula->aula;
+			}
 			$e_cuenta = $this->estado_cuenta($alumno->id);
+
+			//$area = json_decode($this->modelo3->select_one("areas", array('id' => $alumno->id_area)));
+
+			$sql = "SELECT A.area FROM areas A JOIN carreras C ON C.id_area = A.id AND C.id = " . $alumno->id_carrera;
+			//echo $this->modelo3->run_query($sql, false);
+			$area = json_decode($this->modelo3->run_query($sql, false));
+			//print_r($area);
+
 			// print_r($e_cuenta);
 			$anio = date("Y");
 			$fecha = date("Y-m-d");
@@ -106,32 +123,29 @@ class asistencias_new extends f
 			if (empty($e_cuenta) || count($e_cuenta) == 0) {
 				$ecuenta = '<span class="badge badge-danger" style="font-size: 100%;">Deuda</span> <span class="badge badge-primary" style="font-size: 100%;">' . ($alumno->fecha_pago - $dia_hoy) . ' días restantes.</span>';
 			} else {
-				if ($e_cuenta[0]->monto < $alumno->pension) {
-					// $datetime1 = new DateTime(date("Y-m-d", strtotime($alumno->fecha_pago)));
-					// $datetime2 = new DateTime($alumno->fecha_pago);
-					// $difference = $datetime1->diff($datetime2);
-
-					$ecuenta = '<span class="badge badge-warning" style="font-size: 100%;">Deuda Pendiente (S/ ' . number_format(($alumno->pension - $e_cuenta[0]->monto), 2) . ')</span> <span class="badge badge-danger" style="font-size: 100%;">Vencimiento: ' . (date("Y-m-d", strtotime(date("Y-m-d") . " +" . $e_cuenta[0]->plazo . "days"))) . '</span>';
+				if ($e_cuenta[0]->adeuda > 0) {
+					$ecuenta = '<span class="badge badge-warning" style="font-size: 100%;">Deuda Pendiente (S/ ' . number_format($e_cuenta[0]->adeuda, 2) . ')</span> <span class="badge badge-danger" style="font-size: 100%;">Vencimiento: ' . (date("Y-m-").$alumno->fecha_pago) . '</span>';
 				} else {
-					$datetime1 = new DateTime($e_cuenta[0]->fecha);
+					$datetime1 = new DateTime(date("Y-m-" . $alumno->fecha_pago));
 
 					$datetime2 = new DateTime($fecha);
 
 					$difference = $datetime1->diff($datetime2);
 
-					if ($difference->days >= 30) {
+					if ($difference->days >= 1) {
 						$ecuenta = '<span class="badge badge-danger" style="font-size: 100%;">Deuda</span> <span class="badge badge-primary" style="font-size: 100%;">' . ($dia_hoy - $alumno->fecha_pago) . ' días Atraso.</span>';
 					} else {
 						$ecuenta = '<span class="badge badge-success" style="font-size: 100%;">Al día</span>';
 					}
 				}
 			}
-
+			unset($alumno->pass);
 			$result = array(
 				'Code' => '100',
 				'Data' => $alumno,
 				'Ecuenta' => array("ecuenta" => $ecuenta),
-				'aula' => $aula->aula
+				'aula' => $aula_alumno,
+				'area' => $area[0]->area
 			);
 			echo json_encode($result);
 		} else {

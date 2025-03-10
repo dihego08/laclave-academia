@@ -55,12 +55,12 @@
                             <p>Mis Cursos</p>
                         </a>
                     </li>
-                    <!--<li>
-                        <a class="nav-link" href="./asistencias.html">
-                            <i class="nc-icon nc-paper-2"></i>
-                            <p>Asistencias</p>
+                    <li hidden>
+                        <a class="nav-link" href="./sc2.html">
+                            <i class="nc-icon nc-time-alarm"></i>
+                            <p>Calendario</p>
                         </a>
-                    </li>-->
+                    </li>
                     <li>
                         <a class="nav-link" href="./entregas.html">
                             <i class="nc-icon nc-paper-2"></i>
@@ -118,9 +118,6 @@
             </nav><!-- End Navbar -->
             <div class="content">
                 <div class="row">
-                    <div class="col-md-12 mb-4">
-                        <span class="btn btn-success btn-rounded" data-toggle="modal" data-target="#calendario">Calendario</span>
-                    </div>
                     <div class="col-md-5" style="background-color: #f0e3d5;">
                         <div class="card mt-1">
                             <div class="card-header ">
@@ -201,7 +198,7 @@
                 </div>
                 <div class="modal-body pt-0">
                     <div class="row w-100">
-                        <iframe src="schedules.html" frameborder="0" class="w-100" style="height: 100vh !important;"></iframe>
+                        <!--<iframe src="schedules.html" frameborder="0" class="w-100" style="height: 100vh !important;"></iframe>-->
                     </div>
                 </div>
             </div>
@@ -291,7 +288,7 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
-        //get_data();
+        get_data();
         get_ahora();
         localStorage.setItem('cur_url', window.location.href);
         lista_tareas_pendientes();
@@ -302,7 +299,7 @@
             var obj = JSON.parse(data);
 
             if (obj.user_name == null || obj.user_name == "" || obj.user_name == undefined) {
-                location.href = "../login/login_a.php";
+                location.href = "login/login_a.php";
             } else {
                 $("#user_name").text(obj.user_name);
                 $("#career_name").text(obj.carrera);

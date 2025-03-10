@@ -56,6 +56,8 @@
 	    }
 	    function editarBD(){
 	        $data["aula"] = $_POST["aula"];
+			$data["aforo"] = $_POST["aforo"];
+			$data["orden"] = $_POST["orden"];
 	        $this->modelo->update("aulas", $data, array("id" => $_POST['id']));
 	    }
 	    private function valida($level) {

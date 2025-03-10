@@ -416,12 +416,13 @@
         renderRange.innerHTML = html.join('');
     }
 
-    function setSchedules() {
+    async function setSchedules() {
         cal.clear();
-        generateSchedule(cal.getViewName(), cal.getDateRangeStart(), cal.getDateRangeEnd());
-        cal.createSchedules(ScheduleList);
+        await generateSchedule(cal.getViewName(), cal.getDateRangeStart(), cal.getDateRangeEnd());
+        console.log("AKI CRREA ALGO");
+        await cal.createSchedules(ScheduleList);
 
-        refreshScheduleVisibility();
+        await refreshScheduleVisibility();
     }
 
     function setEventListener() {

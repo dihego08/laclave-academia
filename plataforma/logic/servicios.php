@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../../env/env.php");
+include("../env/env.php");
 if ($_GET['parAccion'] == "get_data") {
     $query = $mbd->prepare("SELECT c.carrera, a.area, u.id_aula FROM usuarios as u, carreras as c, areas as a WHERE u.id = :id_usuario AND u.id_carrera = c.id AND c.id_area = a.id");
     $query->bindParam(":id_usuario", $_SESSION['id']);
@@ -1405,32 +1405,26 @@ if ($_GET['parAccion'] == "get_data") {
         )
     );
 } elseif ($_GET['parAccion'] == 'getSchedule_save') {
-    /*echo "SIN LLEGO";
-    echo $_POST['data']['title'];
-    var_dump($_POST);
-    print_r(json_decode($_POST['data']));*/
-    $encodedData = file_get_contents('php://input');  // take data from react native fetch API
-    $decodedData = json_decode($encodedData, true);
-    //print_r($decodedData);
-    //echo $decodedData['start']['_date'];
+    /*$encodedData = file_get_contents('php://input');
+    $decodedData = json_decode($encodedData, true);*/
+
     try {
         $mbd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $mbd->beginTransaction();
         $query = $mbd->prepare("INSERT INTO eventos(title, isAllDay, start, end, category, dueDateClass, color, bgColor, dragBgColor, borderColor, location, isPrivate, state) VALUES (:title, :isAllDay, :start, :end, :category, :dueDateClass, :color, :bgColor, :dragBgColor, :borderColor, :location, :isPrivate, :state)");
-        //$query->bindParam('',);
-        $query->bindParam(':title', $decodedData['title']);
-        $query->bindParam(':isAllDay', $decodedData['isAllDay']);
-        $query->bindParam(':start', $decodedData['start']['_date']);
-        $query->bindParam(':end', $decodedData['end']['_date']);
-        $query->bindParam(':category', $decodedData['category']);
-        $query->bindParam(':dueDateClass', $decodedData['dueDateClass']);
-        $query->bindParam(':color', $decodedData['color']);
-        $query->bindParam(':bgColor', $decodedData['bgColor']);
-        $query->bindParam(':dragBgColor', $decodedData['dragBgColor']);
-        $query->bindParam(':borderColor', $decodedData['borderColor']);
-        $query->bindParam(':location', $decodedData['location']);
-        $query->bindParam(':isPrivate', $decodedData['isPrivate']);
-        $query->bindParam(':state', $decodedData['state']);
+        $query->bindValue(':title', $_POST['title']);
+        $query->bindValue(':isAllDay', $_POST['isAllDay']);
+        $query->bindValue(':start', $_POST['start']);
+        $query->bindValue(':end', $_POST['end']);
+        $query->bindValue(':category', $_POST['category']);
+        $query->bindValue(':dueDateClass', $_POST['dueDateClass']);
+        $query->bindValue(':color', $_POST['color']);
+        $query->bindValue(':bgColor', $_POST['bgColor']);
+        $query->bindValue(':dragBgColor', $_POST['dragBgColor']);
+        $query->bindValue(':borderColor', $_POST['borderColor']);
+        $query->bindValue(':location', $_POST['location']);
+        $query->bindValue(':isPrivate', $_POST['isPrivate']);
+        $query->bindValue(':state', $_POST['state']);
         $query->execute();
 
         $mbd->commit();
@@ -1446,4 +1440,12 @@ if ($_GET['parAccion'] == "get_data") {
         );
         echo json_encode($result);
     }
+} elseif ($_GET['parAccion'] == 'getSchedule_list') {
+    $query = $mbd->prepare("SELECT * FROM eventos;");
+    $query->execute();
+    $values = array();
+    while ($res = $query->fetch(PDO::FETCH_ASSOC)) {
+        $values[] = $res;
+    }
+    echo json_encode($values);
 }

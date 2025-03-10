@@ -160,7 +160,7 @@ if (isset($_POST['btn-login'])) {
 				<div class="col-md-6 mx-auto">
 					<div class="card card-user">
 						<div class="card-header">
-							<p id="spinner" style=" text-align: center; "><img src="/img/logo.png" style="width: 20%; border-radius: 100%; box-shadow: 0px 2px 2px #313131;"> </p>
+							<p id="spinner" style=" text-align: center; "><img src="../assets/img/logo.png" style="width: 20%; border-radius: 100%; box-shadow: 0px 2px 2px #313131;"> </p>
 							<h5 class="card-title w-100 text-center">Formulario de Inicio de Sesion</h5>
 						</div>
 						<div class="card-body">

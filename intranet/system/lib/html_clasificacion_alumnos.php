@@ -28,6 +28,7 @@ class html_clasificacion_alumnos extends f{
                                     <table class="table table-hover table-striped " id="tabla-asignacion">
                                         <thead>
                                             <th>Alumno</th>
+                                            <th>Promedio</th>
                                             <th>Aula</th>
                                         </thead>
                                         <tbody></tbody>
@@ -100,6 +101,7 @@ class html_clasificacion_alumnos extends f{
                         $.each(obj, function(index, val){
                             $("#tabla-asignacion").find("tbody").append(`<tr>
                                 <td>${val.alumno}</td>
+                                <td>${$.trim(val.promedio)}</td>
                                 <td>${$.trim(val.aula)}</td>
                             </tr>`);
                         });
@@ -111,7 +113,8 @@ class html_clasificacion_alumnos extends f{
                             },
                             buttons: [
                                 "excel"
-                            ]
+                            ],
+                            order: [[1, "desc"]]
                         });
                     });
                 }
