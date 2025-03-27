@@ -15,7 +15,7 @@ class html_pagos extends f{
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12 col-md-12">
-                        <!--<span style="float: right; margin-bottom: 10px;" class="btn btn-sm btn-success" data-toggle="modal" data-target="#formulario" id="btn_nuevo" onclick="nuevo_alumno();">Nuevo Alumno</span>-->
+                        <span style="float: right; margin-bottom: 10px;" class="btn btn-sm btn-outline-success" data-toggle="modal" data-target="#formulario" id="btn_nuevo" onclick="nuevo_pago();"><i class="fa fa-plus"></i> Registrar Pago</span>
                         <h5 class="">
                             <i class="fa fa-bars" aria-hidden="true"></i> Registro de Pagos
                         </h5>
@@ -39,6 +39,89 @@ class html_pagos extends f{
                                     </table>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!----------------------------------------------------------------------->
+            <div class="modal fade" id="formulario" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document" style="max-width: 80%;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLabel">Nuevo Alumno</h3>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group" style="width: 100%;">
+                                <div class="col-12 mb-2">
+                                    <label for="">Alumno</label>
+                                    <select class="form-control mt-2 mb-1" id="id_alumno">
+                                        <option value="-1">--SELECCIONAR--</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-2 form-row">
+                                    <div class="col-3 mb-2">
+                                        <label for="">Concepto</label>
+                                        <select class="form-control" id="id_concepto"></select>
+                                    </div>
+                                    <div class="col-3 mb-2">
+                                        <label for="">Monto</label>
+                                        <input type="text" class="form-control" id="pension" readonly>
+                                    </div>
+                                    <div class="col-3 mb-2">
+                                        <label for="">Monto</label>
+                                        <input type="text" class="form-control" id="monto">
+                                        <span id="sp_deuda" class="badge badge-primary"></span>
+                                        <input type="hidden" id="adeuda">
+                                    </div>
+                                    <div class="col-3 mb-2">
+                                        <label for="">Fecha</label>
+                                        <input type="text" class="form-control datepicker" id="fecha">
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-2 form-row">
+                                    <div class="col-6">
+                                        <label >Fecha Desde</label>
+                                        <input type="text" class="form-control datepicker" id="fecha_desde" name="fecha_desde">
+                                    </div>
+                                    <div class="col-6">
+                                        <label >Fecha Hasta</label>
+                                        <input type="text" class="form-control datepicker" id="fecha_hasta" name="fecha_hasta">
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-2 form-row">
+                                    <div class="col-6">
+                                        <label >Método de Pago</label>
+                                        <select class="form-control" id="id_metodo_pago"></select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="d-block">Adjuntar Comprobante</label>
+                                        <label for="foto" style="font-weight: bold;">
+                                            <i class="fa fa-camera" style="font-size: 2rem; cursor: pointer;"></i>
+                                            <input id="foto" class="form-control" name="foto" type="file" style="display: none;"/>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <img src="" id="profile-img-tag" width="200px" style="margin-left: auto;margin-right: auto;" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <progress id="progressBar" class="mt-2" value="0" max="100" style="width:100%;"></progress>
+                                    <p id="status"></p>
+                                    <p id="loaded_n_total"></p>
+                                </div>
+                                <div class="form-row text-center">
+                                    <button type="submit" class="btn btn-success" id="btn_finalizar">Guardar</button>
+                                    <span class="btn btn-danger" type="button" data-dismiss="modal" id="cerrar_formulario_docente" style="margin-left: 10px">
+                                        Cancelar
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
                         </div>
                     </div>
                 </div>

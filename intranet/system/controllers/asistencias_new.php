@@ -120,12 +120,16 @@ class asistencias_new extends f
 
 			$this->modelo3->insert_data("asistencias_new", $_POST, false);
 			$dia_hoy = date("d");
+			//print_r($e_cuenta);
 			if (empty($e_cuenta) || count($e_cuenta) == 0) {
 				$ecuenta = '<span class="badge badge-danger" style="font-size: 100%;">Deuda</span> <span class="badge badge-primary" style="font-size: 100%;">' . ($alumno->fecha_pago - $dia_hoy) . ' días restantes.</span>';
 			} else {
 				if ($e_cuenta[0]->adeuda > 0) {
 					$ecuenta = '<span class="badge badge-warning" style="font-size: 100%;">Deuda Pendiente (S/ ' . number_format($e_cuenta[0]->adeuda, 2) . ')</span> <span class="badge badge-danger" style="font-size: 100%;">Vencimiento: ' . (date("Y-m-").$alumno->fecha_pago) . '</span>';
 				} else {
+				    if(date("Y", strtotime($e_cuenta[0]->fecha)) == date("Y", strtotime(date("Y-m-" . $alumno->fecha_pago))) && date("m", strtotime($e_cuenta[0]->fecha)) == date("m", strtotime(date("Y-m-" . $alumno->fecha_pago)))){
+				        $ecuenta = '<span class="badge badge-success" style="font-size: 100%;">Al día</span>';
+				    }else{
 					$datetime1 = new DateTime(date("Y-m-" . $alumno->fecha_pago));
 
 					$datetime2 = new DateTime($fecha);
@@ -137,6 +141,7 @@ class asistencias_new extends f
 					} else {
 						$ecuenta = '<span class="badge badge-success" style="font-size: 100%;">Al día</span>';
 					}
+				    }
 				}
 			}
 			unset($alumno->pass);

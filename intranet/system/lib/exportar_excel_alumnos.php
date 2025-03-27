@@ -6,7 +6,7 @@
     $compra = new ClsInsumos;
     $compras = json_decode($compra->lista_compras_2($_GET));*/
 	
-	$json = file_get_contents('https://laclave.diegoaranibar.com/intranet/?/alumnos/loadalumnos');
+	$json = file_get_contents('https://intranet.laclaveacademia.com/?/alumnos/loadalumnos');
 	$obj = json_decode($json);
 
 	$aux = 0;

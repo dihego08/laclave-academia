@@ -41,14 +41,14 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
     if ($auxiliar == 0) {
         $carnets .= '<tr>';
         $carnets .= '<td style="width: 50%; padding-top: 1%; padding-bottom:2%; padding-left: 6%; padding-right: 16%; margin: 0;">
-        <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://laclave.diegoaranibar.com/intranet/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
+        <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://intranet.laclaveacademia.com/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
             
             
             
             <table style="width: 100%; margin-top: 15%;">
                 <tr>
                     <td style="width: 30%;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
+                        <img src="https://intranet.laclaveacademia.com/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
                     </td>
                     <td>
                         <table border="0" style="width: 100%;" >
@@ -105,13 +105,13 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
         $auxiliar = 0;
         $carnets .= '<tr>';
         $carnets .= '<td style="width: 50%; padding-top: 1%; padding-bottom:2%; padding-left: 6%; padding-right: 16%; margin: 0; min-height: 400px;">
-            <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://laclave.diegoaranibar.com/intranet/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
+            <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://intranet.laclaveacademia.com/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
                 
                 
                 <table style="width: 100%; margin-top: 15%;">
                 <tr>
                     <td style="width: 30%;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
+                        <img src="https://intranet.laclaveacademia.com/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
                     </td>
                     <td>
                         <table border="0" style="width: 100%;">
@@ -163,14 +163,14 @@ while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
         </td>';
     } else {
         $carnets .= '<td style="width: 50%; padding-top: 1%; padding-bottom:2%; padding-left: 6%; padding-right: 16%; margin: 0; min-height: 400px;">
-        <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://laclave.diegoaranibar.com/intranet/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
+        <div style="position:relative; border: solid 1px; width: 80mm; height: 48mm; background-image:url(\'https://intranet.laclaveacademia.com/system/controllers/fondos_carnet/' . $settings['imagen'] . '\');background-size: contain;background-position: top;background-repeat: no-repeat;">
             
             
             
             <table style="width: 100%; margin-top: 15%;">
                 <tr>
                     <td style="width: 30%;">
-                        <img src="https://laclave.diegoaranibar.com/intranet/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
+                        <img src="https://intranet.laclaveacademia.com/system/controllers/photo/' . $row['foto'] . '" style="width: 100%; z-index: 0;">
                     </td>
                     <td>
                         <table border="0" style="width: 100%;">

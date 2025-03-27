@@ -55,7 +55,7 @@ class html_configuracion_carnet extends f
                                             <table style="width: 100%; margin-left: 1rem; margin-top: 15%;">
                                                 <tr>
                                                     <td style="width: 30%;">
-                                                        <img src="https://laclave.diegoaranibar.com/intranet/system/controllers/photo/user-2935527_1280.png" style="width: 100%; z-index: 0;">
+                                                        <img src="https://intranet.laclaveacademia.com/system/controllers/photo/user-2935527_1280.png" style="width: 100%; z-index: 0;">
                                                     </td>
                                                     <td>
                                                         <table border="0" style="width: 100%;">
@@ -263,7 +263,7 @@ class html_configuracion_carnet extends f
                         $("#color_secundario").val(obj[0].color_secundario);
                         $("#color_texto").val(obj[0].color_texto);
 
-                        $("#div-elemento").css("background-image", "url(\'https://laclave.diegoaranibar.com/intranet/system/controllers/fondos_carnet/" +obj[0].imagen + "\')");
+                        $("#div-elemento").css("background-image", "url(\'https://intranet.laclaveacademia.com/system/controllers/fondos_carnet/" +obj[0].imagen + "\')");
 
                         $("#svg_color_principal path").attr("fill", obj[0].color_principal); // Actualizar el color del SVG
                         $("#svg_color_secundario path").attr("fill", obj[0].color_secundario); // Actualizar el color del SVG
