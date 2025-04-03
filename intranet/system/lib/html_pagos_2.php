@@ -79,36 +79,14 @@ class html_pagos_2 extends f
                                     </select>
                                 </div>
                                 <div class="col-12 mb-2 form-row">
-                                    <div class="col-3 mb-2">
-                                        <label for="">Concepto</label>
-                                        <select class="form-control" id="id_concepto"></select>
-                                    </div>
-                                    <div class="col-3 mb-2">
-                                        <label for="">Monto</label>
-                                        <input type="text" class="form-control" id="pension" readonly>
-                                    </div>
-                                    <div class="col-3 mb-2">
-                                        <label for="">Monto</label>
+                                    <div class="col-6">
+                                        <label >Monto</label>
                                         <input type="text" class="form-control" id="monto">
-                                        <span id="sp_deuda" class="badge badge-primary"></span>
-                                        <input type="hidden" id="adeuda">
                                     </div>
-                                    <div class="col-3 mb-2">
+                                    <div class="col-6 mb-2">
                                         <label for="">Fecha</label>
                                         <input type="text" class="form-control datepicker" id="fecha">
                                     </div>
-                                </div>
-                                <div class="col-12 mb-2 form-row">
-                                    <div class="col-6">
-                                        <label >Fecha Desde</label>
-                                        <input type="text" class="form-control datepicker" id="fecha_desde" name="fecha_desde">
-                                    </div>
-                                    <div class="col-6">
-                                        <label >Fecha Hasta</label>
-                                        <input type="text" class="form-control datepicker" id="fecha_hasta" name="fecha_hasta">
-                                    </div>
-                                </div>
-                                <div class="col-12 mb-2 form-row">
                                     <div class="col-6">
                                         <label >Método de Pago</label>
                                         <select class="form-control" id="id_metodo_pago"></select>
@@ -124,6 +102,22 @@ class html_pagos_2 extends f
                                         <img src="" id="profile-img-tag" width="200px" style="margin-left: auto;margin-right: auto;" />
                                     </div>
                                 </div>
+                                <div class="col-12 mb-2 form-row">
+                                    <table class="table" id="tabla_plan_pagos">
+                                        <thead>
+                                            <th>Concepto</th>
+                                            <th>Fecha</th>
+                                            <th>Monto</th>
+                                            <th>Estado</th>
+                                            <th>Fecha Pago</th>
+                                            <th>Monto Pagado</th>
+                                            <th>Debe</th>
+                                            <th></th>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
                                 <div class="col-md-12 mt-3">
                                     <progress id="progressBar" class="mt-2" value="0" max="100" style="width:100%;"></progress>
                                     <p id="status"></p>
@@ -131,7 +125,7 @@ class html_pagos_2 extends f
                                 </div>
                                 <div class="form-row text-center">
                                     <button type="submit" class="btn btn-success" id="btn_finalizar">Guardar</button>
-                                    <span class="btn btn-danger" type="button" data-dismiss="modal" id="cerrar_formulario_docente" style="margin-left: 10px">
+                                    <span class="btn btn-danger" type="button"  id="cerrar_formulario_docente" style="margin-left: 10px">
                                         Cancelar
                                     </span>
                                 </div>
@@ -228,7 +222,7 @@ class html_pagos_2 extends f
                         id: $("#id_alumno").val()
                     }, function(response){
                         var obj = JSON.parse(response);
-                        conceptos_pagos=[];
+                        /*conceptos_pagos=[];
                         $("#id_concepto").empty();
                         $("#id_concepto").append(`<option value="0" selected>--SELECCIONE--</option>`);
                         $.each(obj, function(index, val){
@@ -238,11 +232,58 @@ class html_pagos_2 extends f
                                 monto:val.monto
                             });
                             $("#id_concepto").append(`<option value="${val.id}" >${val.concepto}</option>`);
+                        });*/
+                        $("#tabla_plan_pagos").find("tbody").empty();
+                        $.each(obj, function(index, val){
+                            let estado = "";
+                            let estadoe = "";
+                            let checkedd = "";
+                            if(val.estado == 0){
+                                estado = `<span class="badge badge-danger">Deuda</span>`;
+                            }else{
+                                estado = `<span class="badge badge-success">Pagado</span>`;
+                                estadoe = "disabled";
+                                checkedd = "checked";
+                            }
+                            $("#tabla_plan_pagos").find("tbody").append(`<tr>
+                                <td>${val.concepto}</td>
+                                <td>${val.fecha}</td>
+                                <td>${val.monto}</td>
+                                <td>${estado}</td>
+                                <td>${$.trim(val.fecha_pago)}</td>
+                                <td>${val.monto_pago}</td>
+                                <td>${val.monto - val.monto_pago}</td>
+                                <td>
+                                    <input ${estadoe} type="checkbox" class="cb-dt-selecciona" name="id-plan" value="${val.id}" ${checkedd}>
+                                </td>
+                            </tr>`);
+                        });
+                        $(".cb-dt-selecciona").on("click", function(){
+                            if($(this).is(":checked")){
+                                $(this).parents("tr").css("background", "#bbbbbb");
+                            }else{
+                                $(this).parents("tr").css("background", "none");
+                            }
+                            let total = 0;
+                            conceptos_seleccionados = 0;
+                            $(\'input[name="id-plan"]\').each(function(){
+                                if($(this).is(":checked")){
+                                    conceptos_seleccionados += ","+$(this).val();
+                                    let monto = parseFloat($(this).closest("tr").find("td:eq(2)").text());
+                                    total += monto;
+                                }
+                            });
+                            //$("#btn-exportar-carnet").prop("href", "system/lib/generar-carnet.php?id="+conceptos_seleccionados);
+                            console.log(conceptos_seleccionados);
+                            $("#monto").val(total.toFixed(2));
                         });
                     });
                 }
                 var conceptos_pagos = [];
+                var conceptos_seleccionados = "";
                 $(document).ready(function() {
+                    
+
                     get_metodos_pagos();
                     //llenar_conceptos();
                     function readURL_2(input) {
@@ -399,7 +440,7 @@ class html_pagos_2 extends f
                         console.log(concepto_seleccionado);
                         $("#pension").val(concepto_seleccionado[0].monto);
                     });
-                    $("#monto").on("keyup", function(){
+                    /*$("#monto").on("keyup", function(){
                         if($("#monto").val() == ""){
                             $("#sp_deuda").text("Deuda: " + $("#pension").val());
                             $("#adeuda").val($("#pension").val());
@@ -415,6 +456,29 @@ class html_pagos_2 extends f
                         }else{
                             $("#plazo").attr("readonly", true);
                         }
+                    });*/
+                    $("#monto").on("change", function () {
+                        let montoDisponible = parseFloat($(this).val()) || 0; // Obtener el monto ingresado
+                        let suma = 0;
+
+                        $(".cb-dt-selecciona:not(:disabled)").prop("checked", false); // Desmarcar todos los checkboxes
+
+                        $(".cb-dt-selecciona:not(:disabled)").each(function () {
+                            let fila = $(this).closest("tr");
+                            let montoPagadoPrevio = parseFloat(fila.find("td:eq(5)").text()) || 0; // Monto Pagado actual
+                            let montoDebe = parseFloat(fila.find("td:eq(6)").text()) || 0; // Monto que falta pagar
+
+                            if (suma < montoDisponible && montoDebe > 0) {
+                                let montoRestante = montoDisponible - suma; // Cuánto nos queda del pago disponible
+                                let pagoRealizado = Math.min(montoRestante, montoDebe); // Solo pago lo que falta
+
+                                fila.find("td:eq(5)").text((montoPagadoPrevio + pagoRealizado).toFixed(2)); // Actualizar Monto Pagado
+                                fila.find("td:eq(6)").text((montoDebe - pagoRealizado).toFixed(2)); // Actualizar Deuda
+                                suma += pagoRealizado; // Acumulamos lo pagado
+
+                                $(this).prop("checked", true); // Marcar checkbox
+                            }
+                        });
                     });
                 });
                 function abrir_formulario_pago(id, adeuda, id_concepto){
@@ -455,7 +519,7 @@ class html_pagos_2 extends f
                     });
                 }
                 function limpiar_formulario(){
-                    $("#dni").val("");
+                    /*$("#dni").val("");
                     $("#nombres").val("");
                     $("#apellidos").val("");
                     $("#fecha_nacimiento").val("");
@@ -465,7 +529,11 @@ class html_pagos_2 extends f
                     $("#id_padre").val("");
                     $("#concepto").val("");
                     $("#plazo").val("");
-                    $("#btn_finalizar").text("Guardar");
+                    $("#btn_finalizar").text("Guardar");*/
+                    $("#tabla_plan_pagos").find("tbody").empty();
+                            $("#id_alumno").val(0).trigger("change");
+                            $("#monto").val("");
+                            $("#fecha").val("");
                 }
                 function editar(id){
                     $.ajax({
@@ -596,19 +664,39 @@ class html_pagos_2 extends f
                         return;
                     }*/
 
+                    let pagos = [];
+
+                    $(".cb-dt-selecciona:checked:not(:disabled)").each(function () {
+                        let fila = $(this).closest("tr");
+                        let idPlan = $(this).val(); // Extrae el ID del checkbox
+                        let montoPagado = parseFloat(fila.find("td:eq(5)").text()) || 0; // Obtiene el monto pagado
+                        let monto = parseFloat(fila.find("td:eq(2)").text()) || 0; // Obtiene el monto pagado
+
+                        pagos.push({
+                            id_plan: idPlan,
+                            monto_pagado: montoPagado,
+                            monto: monto
+                        });
+                    });
+
+                    if (pagos.length === 0) {
+                        alert("No hay pagos seleccionados.");
+                        return;
+                    }
+
                     var file = _("foto").files[0];
                     form_data.append("foto", file);
                     
                     form_data.append("id_usuario", $("#id_alumno").val());
                     form_data.append("monto", $("#monto").val());
                     form_data.append("fecha", $("#fecha").val());
-                    form_data.append("mes", $("#mes").val());
-                    form_data.append("concepto", $("#id_concepto option:selected").text());
-                    form_data.append("adeuda", $("#adeuda").val());
-                    form_data.append("plazo", $("#plazo").val());
+                    //form_data.append("mes", $("#mes").val());
+                    //form_data.append("concepto", $("#id_concepto option:selected").text());
+                    /*form_data.append("adeuda", $("#adeuda").val());
+                    form_data.append("plazo", $("#plazo").val());*/
                     form_data.append("id_metodo_pago", $("#id_metodo_pago").val());
-                    form_data.append("id_concepto", $("#id_concepto").val());
-
+                    //form_data.append("id_concepto", $("#id_concepto").val());
+                    form_data.append("pagos", JSON.stringify(pagos));
                     form_data.append("fecha_desde", $("#fecha_desde").val());
                     form_data.append("fecha_hasta", $("#fecha_hasta").val());
                     
@@ -625,6 +713,10 @@ class html_pagos_2 extends f
                             table.ajax.reload();
                             alertify.notify("<strong>Pago</strong> agregado correctamente.", "custom-black", 3, function() {});
                             $("#cerrar_formulario_docente").click();
+                            $("#tabla_plan_pagos").find("tbody").empty();
+                            $("#id_alumno").val(0).trigger("change");
+                            $("#monto").val("");
+                            $("#fecha").val("");
                         },error: function() {
                             table = $(".datatable").DataTable();
                             table.ajax.reload();

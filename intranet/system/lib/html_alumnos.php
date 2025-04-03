@@ -142,6 +142,7 @@ class html_alumnos extends f
                                         <label for="">Ciclo Academico</label>
                                         <select class="form-control" id="ins_ciclo">
                                         </select>
+                                        <small class="badge badge-info" id="duracion_ciclo"></small>
                                     </div>
                                     <div class="col-md-4 col-12">
                                         <label class="bold">Grupo</label><br>
@@ -159,48 +160,6 @@ class html_alumnos extends f
                                         </select>
                                     </div>
                                 </div>
-                                <!--<div class="col-12 mb-2 form-row">
-                                    <div class="col-6 col-md-6">
-                                        <label>Día de Pago de Mensualidad</label>
-                                        <select class="form-control" id="fecha_pago" name="fecha_pago">
-                                            <option value="01">01 de Cada Mes</option>
-                                            <option value="02">02 de Cada Mes</option>
-                                            <option value="03">03 de Cada Mes</option>
-                                            <option value="04">04 de Cada Mes</option>
-                                            <option value="05">05 de Cada Mes</option>
-                                            <option value="06">06 de Cada Mes</option>
-                                            <option value="07">07 de Cada Mes</option>
-                                            <option value="08">08 de Cada Mes</option>
-                                            <option value="09">09 de Cada Mes</option>
-                                            <option value="10">10 de Cada Mes</option>
-                                            <option value="11">11 de Cada Mes</option>
-                                            <option value="12">12 de Cada Mes</option>
-                                            <option value="13">13 de Cada Mes</option>
-                                            <option value="14">14 de Cada Mes</option>
-                                            <option value="15">15 de Cada Mes</option>
-                                            <option value="16">16 de Cada Mes</option>
-                                            <option value="17">17 de Cada Mes</option>
-                                            <option value="18">18 de Cada Mes</option>
-                                            <option value="19">19 de Cada Mes</option>
-                                            <option value="20">20 de Cada Mes</option>
-                                            <option value="21">21 de Cada Mes</option>
-                                            <option value="22">22 de Cada Mes</option>
-                                            <option value="23">23 de Cada Mes</option>
-                                            <option value="24">24 de Cada Mes</option>
-                                            <option value="25">25 de Cada Mes</option>
-                                            <option value="26">26 de Cada Mes</option>
-                                            <option value="27">27 de Cada Mes</option>
-                                            <option value="28">28 de Cada Mes</option>
-                                            <option value="29">29 de Cada Mes</option>
-                                            <option value="30">30 de Cada Mes</option>
-                                            <option value="31">31 de Cada Mes</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-6 col-md-6">
-                                        <label>Monto Pago Pensión</label>
-                                        <input type="text" class="form-control" id="pension" name="pension" placeholder="Ex: 500.00">
-                                    </div>
-                                </div>-->
                                 <div class="col-md-12 form-row">
                                     <div class="col-md-6 text-center">    
                                         <label class="w-100">Foto</label>
@@ -212,19 +171,23 @@ class html_alumnos extends f
                                         <img class="mt-2" src="" id="profile-img-tag" width="200px" style="margin-left: auto;margin-right: auto;" />
                                     </div>
                                 </div>
+                                <hr class="d-block w-100">
                                 <div class="col-md-12 form-row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="w-100">Concepto Pago</label>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="w-100">Fecha de Pago</label>
+                                        <label class="w-100">Fecha de Primer Pago</label>
                                     </div>
                                     <div class="col-md-3">
                                         <label class="w-100">Monto</label>
                                     </div>
-                                    <div class="col-md-2"></div>
+                                    <div class="col-md-2 text-center">
+                                        <label class="w-100">¿Pago Ùnico?</label>
+                                    </div>
+                                    <div class="col-md-1"></div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <select class="form-control" id="id_concepto"></select>
                                     </div>
                                     <div class="col-md-3">
@@ -233,7 +196,13 @@ class html_alumnos extends f
                                     <div class="col-md-3">
                                         <input type="text" id="monto" class="form-control">
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 text-center">
+                                        <input type="checkbox" value="1" id="pago_unico">
+                                        <label class="form-check-label" for="pago_unico">
+                                            Sí
+                                        </label>
+                                    </div>
+                                    <div class="col-md-1">
                                         <span class="btn btn-outline-success btn-sm m-0 h-100" onclick="add_conceptos();">
                                             <i class="fa fa-plus"></i>
                                         </span>
@@ -323,6 +292,7 @@ class html_alumnos extends f
                 }
             </script>
             <script>
+                let ciclo_seleccionado = null;
                 function llenar_universidades(){
                     $.post("' . $this->baseurl . INDEX . 'universidades/loaduniversidades/", function(response){
                         var obj = JSON.parse(response);
@@ -411,17 +381,73 @@ class html_alumnos extends f
                         monto:$("#monto").val()
                     });
 
-                    $("#tabla-conceptos").find("tbody").append(`<tr id="tr_${$("#id_concepto").val()}">
-                        <td>${$("#id_concepto option:selected").text()}</td>
-                        <td>${$("#fecha_pago").val()}</td>
-                        <td>${$("#monto").val()}</td>
-                        <td><span style="cursor: pointer;" class="btn btn-outline-danger btn-sm" onclick="remove_concepto(${$("#id_concepto").val()});"><i class="fa fa-trash"></i></span></td>
-                    </tr>`);
+                    let es_unico = 0;
+                    if($("#pago_unico").is(":checked")){
+                        $("#tabla-conceptos").find("tbody").append(`<tr id="tr_${$("#id_concepto").val()}">
+                            <td>
+                                ${$("#id_concepto option:selected").text()}
+                                <input type="hidden" class="concepto_pp" value="${$("#id_concepto").val()}" id="concepto_i_${$("#id_concepto").val()}">
+                            </td>
+                            <td>
+                                <input type="text" class="datepicker form-control fecha_pp form-control-sm" value="${$("#fecha_pago").val()}" id="fecha_i_${$("#id_concepto").val()}">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control monto_pp form-control-sm" value="${$("#monto").val()}" id="monto_i_${$("#id_concepto").val()}">
+                            </td>
+                            <td><span style="cursor: pointer;" class="btn btn-outline-danger btn-sm" onclick="remove_concepto(${$("#id_concepto").val()});"><i class="fa fa-trash"></i></span></td>
+                        </tr>`);
+                    }else{
+                        console.log("NO ES UNICO Y DETERGENTE");
+                        let inicio = ciclo_seleccionado.fecha_inicio;
+                        let fin = ciclo_seleccionado.fecha_fin;
+                        var months = diferenciaMeses(inicio, fin);
+                        for(var i = 0; i < months; i++){
+                            $("#tabla-conceptos").find("tbody").append(`<tr id="tr_${$("#id_concepto").val()}">
+                                <td>
+                                    ${$("#id_concepto option:selected").text()}
+                                    <input type="hidden" class="concepto_pp" value="${$("#id_concepto").val()}" id="concepto_${i}_${$("#id_concepto").val()}">
+                                </td>
+                                <td>
+                                    <input type="text" class="datepicker form-control fecha_pp form-control-sm" value="${agregarMeses($("#fecha_pago").val(), i)}" id="fecha_${i}_${$("#id_concepto").val()}">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control monto_pp form-control-sm" value="${$("#monto").val()}" id="monto_${i}_${$("#id_concepto").val()}">
+                                </td>
+                                <td><span style="cursor: pointer;" class="btn btn-outline-danger btn-sm" onclick="remove_concepto(${$("#id_concepto").val()});"><i class="fa fa-trash"></i></span></td>
+                            </tr>`);
+                        }
+
+                    }
+
+                    
                     console.log(conceptos_pagos);
+                }
+                function agregarMeses(fecha, meses) {
+                    let nuevaFecha = new Date(fecha);
+                    nuevaFecha.setMonth(nuevaFecha.getMonth() + meses);
+                    return nuevaFecha.toISOString().split("T")[0];
+                }
+                function diferenciaMeses(fechaInicio, fechaFin) {
+                    let inicio = new Date(fechaInicio);
+                    let fin = new Date(fechaFin);
+
+                    let anios = fin.getFullYear() - inicio.getFullYear();
+                    let meses = fin.getMonth() - inicio.getMonth();
+
+                    return anios * 12 + meses;
                 }
                 function remove_concepto(id){
                     conceptos_pagos = conceptos_pagos.filter((item) => item.id_concepto != id);
                     $("#tr_"+id).remove();
+                }
+                function get_duracion(id_ciclo){
+                    $.post("' . $this->baseurl . INDEX . 'ciclos/editar/", {
+                        id: id_ciclo
+                    }, function(response){
+                        var obj = JSON.parse(response);
+                        ciclo_seleccionado = obj;
+                        $("#duracion_ciclo").text("Desde: " + obj.fecha_inicio+" Hasta: " + obj.fecha_fin);
+                    });
                 }
                 $(document).ready(function() {
                     var ids_alumnos = 0;
@@ -441,6 +467,7 @@ class html_alumnos extends f
                         if($(this).val() == "-1" || $(this).val() == -1){
                         }else{
                             llenar_grupos($(this).val());
+                            get_duracion($(this).val());
                         }
                     });
 
@@ -772,9 +799,27 @@ class html_alumnos extends f
                     }else if($("#ins_grupo").val() == -1 || $("#ins_grupo").val() == "-1"){
                         bootbox.alert("Se debe de seleccionar un grupo");
                     }else{
+
+                        let conceptos = [];
+
+                        $("#tabla-conceptos tbody tr").each(function () {
+                            let concepto = $(this).find(".concepto_pp").val();
+                            let fecha = $(this).find(".fecha_pp").val();
+                            let monto = $(this).find(".monto_pp").val();
+
+                            conceptos.push({
+                                concepto: concepto,
+                                fecha: fecha,
+                                monto: monto
+                            });
+                        });
+
+                        //return conceptos;
+
                         var file = _("foto").files[0];
 
                         formdata.append("foto", file);
+                        formdata.append("conceptos", JSON.stringify(conceptos));
                         formdata.append("nombres", $("#ins_nombres").val());
                         formdata.append("apellidos", $("#ins_apellidos").val());
                         formdata.append("telefono", $("#ins_celular").val());

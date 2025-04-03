@@ -117,9 +117,29 @@ class pagos_2 extends f
 			$aux++;
 		}
 		//}
-		if ($_POST['adeuda'] > 0) {
-			$res = json_decode($this->modelo2->insert_data("pagos_2", $_POST, false));
-			$data = array();
+		//pagos
+		$pago['id_usuario'] = $_POST['id_usuario'];
+		$pago['fecha'] = $_POST['fecha'];
+		$pago['monto'] = $_POST['monto'];
+		$pago['id_metodo_pago'] = $_POST['id_metodo_pago'];
+		$pago['foto_comprobante'] = $_POST['foto_comprobante'];
+		
+
+		$_POST['pagos'] = json_decode($_POST['pagos']);
+		//print_r($_POST['pagos']);
+		foreach ($_POST['pagos'] as $key => $value) {
+			//echo $value->monto_pagado ."<br>";
+			if ($value->monto_pagado < $value->monto) {
+				//echo "UPDATE plan_pagos SET estado = 0, monto_pagado = " . $value->monto_pagado . ", fecha_pago = '" . $_POST['fecha'] . "' WHERE id = " . $value->id_plan."<br>";
+				$this->modelo2->executor("UPDATE plan_pagos SET estado = 0, monto_pago = " . $value->monto_pagado . ", fecha_pago = '" . $_POST['fecha'] . "' WHERE id = " . $value->id_plan, "update");
+			} else {
+				$this->modelo2->executor("UPDATE plan_pagos SET estado = 1, monto_pago = " . $value->monto_pagado . ", fecha_pago = '" . $_POST['fecha'] . "' WHERE id = " . $value->id_plan, "update");
+			}
+		}
+		$this->modelo2->insert_data("pagos_2", $pago, false);
+		/*if ($_POST['adeuda'] > 0) {
+			$res = json_decode($this->modelo2->insert_data("pagos_2", $_POST, false));*/
+		/*$data = array();
 			$data['id_pago'] = $res->LID;
 			$data['adeuda'] = $_POST['adeuda'];
 			$data['pago'] = $_POST['monto'];
@@ -128,9 +148,9 @@ class pagos_2 extends f
 			$data['foto_comprobante'] = $_POST['foto_comprobante'];
 			$data['id_metodo_pago'] = $_POST['id_metodo_pago'];
 			$data['id_concepto'] = $_POST['id_concepto'];
-			echo $this->modelo2->insert_data("pagos_parciales", $data, false);
-		} else {
-			if (strlen($_POST['fecha_desde']) > 0 && strlen($_POST['fecha_hasta']) > 0) {
+			echo $this->modelo2->insert_data("pagos_parciales", $data, false);*/
+		//} else {
+		/*if (strlen($_POST['fecha_desde']) > 0 && strlen($_POST['fecha_hasta']) > 0) {
 				$monto = $_POST['monto'];
 				$datetime1 = new DateTime($_POST['fecha_desde']);
 
@@ -151,8 +171,8 @@ class pagos_2 extends f
 				}
 			} else {
 				echo $this->modelo2->insert_data("pagos_2", $_POST, false);
-			}
-		}
+			}*/
+		//}
 	}
 	function eliminar()
 	{

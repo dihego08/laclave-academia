@@ -53,7 +53,7 @@ class alumnos extends f
 	}
 	function llenar_conceptos_alumno()
 	{
-		echo $this->modelo2->run_query("SELECT c.concepto, ca.* FROM conceptos AS c JOIN concepto_alumno AS ca ON ca.id_concepto = c.id WHERE ca.id_usuario = " . $_POST['id'], false);
+		echo $this->modelo2->run_query("SELECT c.concepto, pp.* FROM conceptos AS c JOIN plan_pagos AS pp ON pp.id_concepto = c.id WHERE pp.id_usuario = " . $_POST['id'], false);
 	}
 	function llenar_conceptos()
 	{
@@ -189,11 +189,9 @@ class alumnos extends f
 
 		$alumno = json_decode($this->modelo2->select_one("usuarios", array("dni" => $_POST["dni"])));
 
-		if (isset($alumno->nombres)) {
+		/*if (isset($alumno->nombres)) {
 			echo json_encode(array("Result" => "ERROR", "Code" => "125"));
-		} else {
-			//conceptos_pagos
-			//$_POST['fecha_pago'] = date("d", strtotime($_POST));
+		} else {*/
 			$res = json_decode($this->modelo2->insert_data("usuarios", $_POST, false));
 			$_POST["conceptos_pagos"] = json_decode($_POST["conceptos_pagos"]);
 			foreach ($_POST["conceptos_pagos"] as $key => $value) {
@@ -208,8 +206,27 @@ class alumnos extends f
 					$this->modelo2->executor("UPDATE usuarios set fecha_pago = '" . date("d", strtotime($value->fecha_pago)) . "' WHERE id = " . $res->LID, "update");
 				}
 			}
+
+			//plan_pagos
+			$_POST["conceptos"] = json_decode($_POST["conceptos"]);
+			foreach ($_POST["conceptos"] as $key => $value) {
+				//$value = json_decode($value);
+				$data['id_concepto'] = $value->concepto;
+				$data['id_usuario'] = $res->LID;
+				$data['monto'] = $value->monto;
+				$data['fecha'] = $value->fecha;
+				$data['fecha_creacion'] = date("Y-m-d H:i:s");
+				$data['estado'] = 0;
+				$data['fecha_pago'] = null;
+				$data['monto_pago'] = 0;
+				$this->modelo2->insert_data("plan_pagos", $data, false);
+
+				/*if ($value->id_concepto == 2) {
+					$this->modelo2->executor("UPDATE usuarios set fecha_pago = '" . date("d", strtotime($value->fecha_pago)) . "' WHERE id = " . $res->LID, "update");
+				}*/
+			}
 			echo json_encode(array("Result" => "OK"));
-		}
+		//}
 	}
 	function eliminar()
 	{
