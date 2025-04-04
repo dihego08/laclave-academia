@@ -189,9 +189,9 @@ class alumnos extends f
 
 		$alumno = json_decode($this->modelo2->select_one("usuarios", array("dni" => $_POST["dni"])));
 
-		/*if (isset($alumno->nombres)) {
+		if (isset($alumno->nombres)) {
 			echo json_encode(array("Result" => "ERROR", "Code" => "125"));
-		} else {*/
+		} else {
 			$res = json_decode($this->modelo2->insert_data("usuarios", $_POST, false));
 			$_POST["conceptos_pagos"] = json_decode($_POST["conceptos_pagos"]);
 			foreach ($_POST["conceptos_pagos"] as $key => $value) {
@@ -226,7 +226,7 @@ class alumnos extends f
 				}*/
 			}
 			echo json_encode(array("Result" => "OK"));
-		//}
+		}
 	}
 	function eliminar()
 	{

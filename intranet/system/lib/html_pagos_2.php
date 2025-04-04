@@ -25,6 +25,10 @@ class html_pagos_2 extends f
                 tbody td {
                     padding: 5px 7px;
                 }
+                    .modal-dialog {
+  max-height: 90vh;
+  overflow-y: auto;
+}
             </style>
             <div class="container-fluid">
                 <div class="row">
