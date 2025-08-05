@@ -1,8 +1,8 @@
 <?php
 /*ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-session_start();*/
+error_reporting(E_ALL);*/
+session_start();
 include("../env/env.php");
 if ($_GET['parAccion'] == "get_data") {
     $query = $mbd->prepare("SELECT c.carrera, a.area, u.id_aula FROM usuarios as u, carreras as c, areas as a WHERE u.id = :id_usuario AND u.id_carrera = c.id AND c.id_area = a.id");
