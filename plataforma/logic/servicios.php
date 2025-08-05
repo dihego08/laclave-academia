@@ -1,5 +1,8 @@
 <?php
-session_start();
+/*ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+session_start();*/
 include("../env/env.php");
 if ($_GET['parAccion'] == "get_data") {
     $query = $mbd->prepare("SELECT c.carrera, a.area, u.id_aula FROM usuarios as u, carreras as c, areas as a WHERE u.id = :id_usuario AND u.id_carrera = c.id AND c.id_area = a.id");
@@ -1448,4 +1451,102 @@ if ($_GET['parAccion'] == "get_data") {
         $values[] = $res;
     }
     echo json_encode($values);
+} elseif ($_GET['parAccion'] == 'guardar_post') {
+    try {
+        $mbd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $mbd->beginTransaction();
+
+        $query = $mbd->prepare("INSERT INTO posts(id_usuario, id_tipo_usuario, post) values(:id_usuario, :id_tipo_usuario, :post)");
+
+        $query->bindParam(":id_usuario", $_SESSION['id']);
+        $id_tipo_usuario = 'A';
+        $query->bindParam(":id_tipo_usuario", $id_tipo_usuario);
+        $query->bindParam(":post", $_POST['post']);
+        $query->execute();
+
+        $LID = $mbd->lastInsertId();
+
+        if (isset($_FILES['imagenes'])) {
+            $imagenes = $_FILES['imagenes'];
+
+            for ($i = 0; $i < count($imagenes['name']); $i++) {
+                $fileName = $imagenes["name"][$i];
+                //echo $fileName . "<br>";
+                $fileTmpLoc = $imagenes["tmp_name"][$i];
+                $fileType = $imagenes["type"][$i];
+                $fileSize = $imagenes["size"][$i];
+                $fileErrorMsg = $imagenes["error"][$i];
+
+                if (!$fileTmpLoc || $fileErrorMsg !== 0) {
+                    // Puedes registrar o ignorar errores individuales si deseas
+                    //echo "Hay un error $fileErrorMsg <br>";
+                    continue;
+                }
+
+                // Aquí haces lo que quieras con la imagen: mover, renombrar, guardar en base de datos, etc.
+                $destination = "../img/" . basename($fileName);
+                move_uploaded_file($fileTmpLoc, $destination);
+                $query_img = $mbd->prepare("INSERT INTO images(id_post, imagen) VALUES(:id_post, :imagen)");
+                $query_img->bindParam(":id_post", $LID);
+                $query_img->bindParam(":imagen", $fileName);
+                $query_img->execute();
+            }
+        }
+        $mbd->commit();
+        $result = array(
+            'Result' => 'OK',
+        );
+        echo json_encode($result);
+    } catch (Exception $e) {
+        $mbd->rollBack();
+        $result = array(
+            'Result' => 'ERROR',
+            'Message' => $e->getMessage()
+        );
+        echo json_encode($result);
+    }
+} elseif ($_GET['parAccion'] == "get_posts") {
+    $query = $mbd->prepare("SELECT p.*, u.nombres, u.apellidos FROM posts p join usuarios u on u.id = p.id_usuario order by p.fecha_creacion desc;");
+    $query->execute();
+    $values = array();
+    while ($res = $query->fetch(PDO::FETCH_ASSOC)) {
+        $query2 = $mbd->prepare("SELECT * FROM images where id_post = :id");
+        $query2->bindParam(":id", $res['id']);
+        $query2->execute();
+        $images = array();
+        while ($r = $query2->fetch(PDO::FETCH_ASSOC)) {
+            $images[] = $r;
+        }
+        $res['images'] = $images;
+        $values[] = $res;
+    }
+    echo json_encode(
+        array(
+            "Result" => "OK",
+            "Values" => $values
+        )
+    );
+} elseif ($_GET['parAccion'] == "cargarComentarios") {
+    $query = $mbd->prepare("SELECT p.*, u.nombres, u.apellidos FROM comentarios_post p join usuarios u on u.id = p.id_usuario where p.id_post = :id ORDER BY fecha_creacion desc;");
+    $query->bindParam(":id", $_POST['id_post']);
+    $query->execute();
+    $values = array();
+    while ($res = $query->fetch(PDO::FETCH_ASSOC)) {
+        $values[] = $res;
+    }
+    echo json_encode(
+        array(
+            "Result" => "OK",
+            "Values" => $values
+        )
+    );
+} elseif ($_GET['parAccion'] == "guardarComentario") {
+    $id_post = $_POST['id_post'];
+    $comentario = $_POST['comentario'];
+    $autor = $_SESSION['id']; // o lo puedes tomar de sesión
+
+    $stmt = $mbd->prepare("INSERT INTO comentarios_post (id_post, texto, id_usuario) VALUES (?, ?, ?)");
+    $stmt->execute([$id_post, $comentario, $autor]);
+
+    echo json_encode(["Result" => "OK"]);
 }
